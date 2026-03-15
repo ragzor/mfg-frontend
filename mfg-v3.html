@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MFG · Manufacturing Management System v3</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0d0f10;--surface:#141618;--surface2:#1c1f22;--surface3:#242830;
+  --border:#2a2e34;--border2:#373d45;--text:#e8eaed;--muted:#7a8290;
+  --accent:#f5a623;--accent2:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --yellow:#eab308;--orange:#f97316;--cyan:#06b6d4;--purple:#a855f7;
+  --mono:'IBM Plex Mono',monospace;--display:'Barlow Condensed',sans-serif;--body:'Barlow',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;height:100vh;display:flex;overflow:hidden;}
+
+.sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:10;overflow-y:auto;}
+.logo{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-icon{width:32px;height:32px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:15px;color:#000;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);}
+.logo-text{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.05em;}
+.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;}
+.nav-section{padding:10px 0;}
+.nav-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.15em;padding:0 16px 6px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;border-left:2px solid transparent;}
+.nav-item:hover{color:var(--text);background:var(--surface2);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(245,166,35,.07);}
+.nav-item .ico{font-size:14px;width:18px;text-align:center;}
+.nbadge{background:var(--accent);color:#000;font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 5px;border-radius:2px;margin-left:auto;}
+.nbadge.b{background:var(--accent2);color:#fff;}.nbadge.g{background:var(--green);color:#fff;}
+.sidebar-foot{margin-top:auto;border-top:1px solid var(--border);padding:14px 16px;flex-shrink:0;}
+.user-chip{display:flex;align-items:center;gap:10px;cursor:pointer;padding:7px 8px;border-radius:4px;transition:background .15s;}
+.user-chip:hover{background:var(--surface2);}
+.avatar{width:30px;height:30px;background:linear-gradient(135deg,var(--accent2),var(--cyan));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;font-family:var(--mono);}
+.uname{font-size:12px;font-weight:600;}.urole{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0;}
+.breadcrumb{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.breadcrumb span{color:var(--text);}
+.topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:3px;border:none;cursor:pointer;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:.03em;transition:all .15s;text-transform:uppercase;}
+.btn-sm{padding:5px 10px;font-size:11px;}.btn-xs{padding:3px 7px;font-size:10px;}
+.btn-primary{background:var(--accent);color:#000;}.btn-primary:hover{background:#ffb83d;}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);}.btn-ghost:hover{color:var(--text);border-color:var(--muted);}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.3);}.btn-danger:hover{background:rgba(239,68,68,.2);}
+.btn-purple{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.3);}.btn-purple:hover{background:rgba(168,85,247,.2);}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:.02em;}
+.section-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+.metric-card{position:relative;overflow:hidden;}
+.metric-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.metric-val{font-family:var(--display);font-size:42px;font-weight:800;line-height:1;margin-bottom:4px;}
+.metric-sub{font-size:12px;color:var(--muted);}
+.metric-ico{position:absolute;right:16px;top:16px;font-size:28px;opacity:.15;}
+.mbar{height:3px;background:var(--border);border-radius:2px;margin-top:14px;overflow:hidden;}
+.mbar-fill{height:100%;border-radius:2px;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:2px solid var(--border2);}
+th{text-align:left;padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-weight:500;white-space:nowrap;}
+td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tr:hover td{background:var(--surface2);}
+tr:last-child td{border-bottom:none;}
+
+.sbadge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:2px;font-family:var(--mono);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.sbadge::before{content:'';width:5px;height:5px;border-radius:50%;}
+.s-comp{background:rgba(34,197,94,.12);color:var(--green);}.s-comp::before{background:var(--green);}
+.s-prog{background:rgba(59,130,246,.12);color:var(--accent2);}.s-prog::before{background:var(--accent2);animation:pulse 1.5s infinite;}
+.s-hold{background:rgba(234,179,8,.12);color:var(--yellow);}.s-hold::before{background:var(--yellow);}
+.s-ns{background:rgba(122,130,144,.1);color:var(--muted);}.s-ns::before{background:var(--muted);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.pipeline{display:flex;align-items:center;flex-wrap:nowrap;overflow-x:auto;padding:2px 0;}
+.pstep{display:flex;align-items:center;}
+.pnode{padding:3px 8px;font-family:var(--mono);font-size:10px;white-space:nowrap;border-radius:2px;}
+.p-done{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.p-active{background:rgba(59,130,246,.2);color:var(--accent2);border:1px solid rgba(59,130,246,.5);box-shadow:0 0 6px rgba(59,130,246,.2);}
+.p-pending{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.parrow{color:var(--border2);font-size:10px;padding:0 3px;}
+
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab{padding:9px 18px;cursor:pointer;font-family:var(--display);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-1px;}
+.tab:hover{color:var(--text);}.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+.fgrp{display:flex;flex-direction:column;gap:5px;}
+.fgrp label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.fi{background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:8px 11px;color:var(--text);font-family:var(--body);font-size:13px;outline:none;transition:border-color .15s;width:100%;}
+.fi:focus{border-color:var(--accent);}
+/* native date input styling */
+input[type=date]{color-scheme:dark;}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer;}
+select.fi option{background:var(--surface2);}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.proc-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;margin-bottom:5px;}
+.proc-num{font-family:var(--mono);font-size:11px;color:var(--accent);width:20px;flex-shrink:0;}
+.proc-sel{flex:1;background:var(--surface);border:1px solid var(--border2);padding:5px 9px;color:var(--text);border-radius:3px;font-family:var(--body);font-size:12px;outline:none;}
+.proc-rm{color:var(--red);cursor:pointer;font-size:14px;opacity:.5;transition:opacity .15s;background:none;border:none;}
+.proc-rm:hover{opacity:1;}
+.add-proc-btn{display:flex;align-items:center;gap:6px;color:var(--accent2);cursor:pointer;font-family:var(--mono);font-size:11px;padding:7px 10px;border:1px dashed var(--border2);border-radius:3px;transition:all .15s;}
+.add-proc-btn:hover{border-color:var(--accent2);background:rgba(59,130,246,.05);}
+
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.backdrop.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:6px;width:600px;max-width:96vw;max-height:92vh;overflow-y:auto;animation:mIn .2s ease;}
+.modal-wide{width:780px;}.modal-xl{width:960px;}.modal-sm{width:440px;}
+@keyframes mIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:2;}
+.modal-title{font-family:var(--display);font-size:20px;font-weight:700;}
+.modal-close{cursor:pointer;color:var(--muted);font-size:20px;background:none;border:none;transition:color .15s;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:18px 22px;}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface);}
+
+/* BULK TABLE */
+.bulk-wrap{overflow-x:auto;margin-bottom:10px;}
+.bulk-tbl{width:100%;border-collapse:collapse;min-width:980px;}
+.bulk-tbl th{background:var(--surface2);padding:7px 8px;font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;}
+.bulk-tbl td{padding:3px 3px;border-bottom:1px solid var(--border);}
+.bi{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 7px;color:var(--text);font-family:var(--body);font-size:12px;outline:none;}
+.bi:focus{border-color:var(--accent);}
+.bs{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:5px 7px;color:var(--text);font-family:var(--body);font-size:12px;outline:none;}
+.rnum{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;width:24px;padding:0 4px;}
+.rdel{color:var(--red);cursor:pointer;font-size:13px;opacity:.4;text-align:center;border:none;background:none;transition:opacity .15s;}
+.rdel:hover{opacity:1;}
+.proc-tags-cell{display:flex;flex-wrap:wrap;gap:3px;align-items:center;cursor:pointer;padding:4px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;min-height:30px;min-width:160px;}
+.ptag{background:rgba(59,130,246,.15);color:var(--accent2);font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:2px;white-space:nowrap;}
+.ptag-ph{color:var(--muted);font-size:11px;}
+.ppopt{display:flex;align-items:center;gap:8px;padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;transition:background .1s;user-select:none;}
+.ppopt:hover{background:var(--surface2);}
+.ppopt input{accent-color:var(--accent2);}
+.ppord{font-family:var(--mono);font-size:9px;color:var(--accent);min-width:16px;}
+
+/* FILTER PANEL */
+.filter-panel{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px 18px;margin-bottom:14px;display:none;}
+.filter-panel.open{display:block;}
+.fp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:12px;}
+.fp-grid-2{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.fp-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.fp-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.fp-chip{padding:3px 9px;border:1px solid var(--border2);border-radius:2px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all .12s;user-select:none;text-transform:uppercase;}
+.fp-chip:hover{color:var(--text);border-color:var(--muted);}
+.fp-chip.sel{background:rgba(59,130,246,.15);color:var(--accent2);border-color:var(--accent2);}
+.fp-chip.sel-p{background:rgba(245,166,35,.1);color:var(--accent);border-color:var(--accent);}
+.active-tags{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:10px;}
+.atag{display:inline-flex;align-items:center;gap:4px;background:rgba(59,130,246,.12);color:var(--accent2);border:1px solid rgba(59,130,246,.3);padding:2px 7px;border-radius:2px;font-family:var(--mono);font-size:10px;}
+.atag.pt{background:rgba(245,166,35,.1);color:var(--accent);border-color:rgba(245,166,35,.3);}
+.atag-rm{cursor:pointer;opacity:.6;background:none;border:none;color:inherit;font-size:12px;}
+.atag-rm:hover{opacity:1;}
+.res-count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:10px;}
+.res-count strong{color:var(--accent);}
+
+/* BULK EDIT BAR */
+.bulk-edit-bar{position:sticky;top:0;z-index:5;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);border-radius:4px;padding:10px 16px;margin-bottom:12px;display:none;align-items:center;gap:10px;flex-wrap:wrap;}
+.bulk-edit-bar.show{display:flex;}
+.beb-count{font-family:var(--mono);font-size:12px;color:var(--accent2);font-weight:600;}
+
+/* CHECK */
+.row-check{width:14px;height:14px;accent-color:var(--accent2);cursor:pointer;}
+
+/* EXCEL IMPORT */
+.drop-zone{border:2px dashed var(--border2);border-radius:6px;padding:30px;text-align:center;transition:all .2s;cursor:pointer;background:var(--surface2);}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent2);background:rgba(59,130,246,.05);}
+.drop-zone-icon{font-size:36px;margin-bottom:10px;opacity:.4;}
+.paste-area{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--muted);resize:vertical;min-height:100px;width:100%;outline:none;}
+.paste-area:focus{border-color:var(--accent);}
+
+/* LIST EDITOR (admin) */
+.list-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;margin-bottom:5px;}
+.list-item-label{flex:1;font-size:13px;}
+.list-item-sub{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.list-item-rm{color:var(--red);cursor:pointer;font-size:13px;opacity:.4;background:none;border:none;transition:opacity .15s;}
+.list-item-rm:hover{opacity:1;}
+.list-add-row{display:flex;gap:8px;margin-top:8px;}
+
+/* AUDIT INLINE */
+.audit-entry-sm{display:grid;grid-template-columns:140px 60px 1fr;gap:8px;align-items:start;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
+.audit-entry-sm:hover{background:var(--surface2);}
+.audit-time-sm{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.aaction{font-family:var(--mono);font-size:10px;padding:2px 5px;border-radius:2px;text-align:center;font-weight:600;text-transform:uppercase;white-space:nowrap;}
+.a-create{background:rgba(34,197,94,.12);color:var(--green);}
+.a-update{background:rgba(59,130,246,.12);color:var(--accent2);}
+.a-delete{background:rgba(239,68,68,.12);color:var(--red);}
+.a-login{background:rgba(6,182,212,.12);color:var(--cyan);}
+.chg-old{color:var(--red);}.chg-new{color:var(--green);}
+
+/* GANTT */
+.gantt-outer{overflow:auto;}
+.gantt-wrap{display:inline-block;min-width:100%;}
+.gh-row{display:flex;position:sticky;top:0;z-index:8;background:var(--surface);}
+.glabel-col{width:230px;min-width:230px;background:var(--surface2);border-right:1px solid var(--border2);flex-shrink:0;}
+.glabel-head{height:50px;display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;border-bottom:2px solid var(--border2);}
+.gtl-head{flex:1;overflow:hidden;}
+.gmonth-row{display:flex;height:25px;border-bottom:1px solid var(--border);}
+.gmonth-cell{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--muted);border-right:1px solid var(--border2);flex-shrink:0;overflow:hidden;}
+.gweek-row{display:flex;height:25px;border-bottom:2px solid var(--border2);}
+.gweek-cell{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;color:var(--border2);border-right:1px solid var(--border);flex-shrink:0;overflow:hidden;}
+.gproj-row{display:flex;background:var(--surface2);border-bottom:1px solid var(--border2);}
+.gproj-label{width:230px;min-width:230px;padding:10px 14px;display:flex;align-items:center;gap:8px;border-right:1px solid var(--border2);flex-shrink:0;}
+.gproj-name{font-family:var(--display);font-size:14px;font-weight:700;}
+.gproj-meta{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px;}
+.gproj-bar-area{flex:1;position:relative;height:50px;}
+.gpart-row{display:flex;border-bottom:1px solid var(--border);}
+.gpart-label{width:230px;min-width:230px;padding:0 14px 0 26px;display:flex;align-items:center;gap:6px;border-right:1px solid var(--border2);flex-shrink:0;min-height:52px;}
+.gpart-id{font-family:var(--mono);font-size:9px;color:var(--accent);flex-shrink:0;}
+.gpart-nm{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gpart-due{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px;}
+.gbar-area{flex:1;position:relative;height:52px;}
+.ggrid{position:absolute;inset:0;display:flex;pointer-events:none;}
+.ggridl{border-right:1px solid var(--border);flex-shrink:0;}.ggridl.ml{border-right-color:var(--border2);}
+.gproc-bar{position:absolute;height:26px;top:13px;border-radius:3px;display:flex;align-items:center;padding:0 6px;font-family:var(--mono);font-size:8px;white-space:nowrap;overflow:hidden;cursor:pointer;transition:filter .15s;z-index:2;}
+.gproc-bar:hover{filter:brightness(1.25);z-index:5;}
+.gproc-bar.selected{outline:2px solid var(--accent);z-index:6;}
+.resize-handle{position:absolute;top:0;bottom:0;width:7px;cursor:ew-resize;z-index:10;opacity:0;}
+.resize-handle:hover,.gproc-bar.selected .resize-handle{opacity:1;background:rgba(255,255,255,.25);}
+.rh-left{left:0;border-radius:3px 0 0 3px;}.rh-right{right:0;border-radius:0 3px 3px 0;}
+.res-chip{position:absolute;bottom:1px;left:4px;font-family:var(--mono);font-size:7px;background:rgba(0,0,0,.4);color:rgba(255,255,255,.8);padding:1px 4px;border-radius:2px;white-space:nowrap;overflow:hidden;max-width:90%;pointer-events:none;}
+.gproj-span{position:absolute;height:6px;top:22px;border-radius:2px;opacity:.3;z-index:1;}
+.gtoday{position:absolute;top:0;bottom:0;width:2px;background:var(--red);opacity:.75;z-index:6;pointer-events:none;}
+.gtarget{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--accent);opacity:.5;z-index:5;pointer-events:none;}
+.gtooltip{position:fixed;background:var(--surface3);border:1px solid var(--border2);border-radius:4px;padding:10px 14px;z-index:200;pointer-events:none;display:none;box-shadow:0 8px 24px rgba(0,0,0,.6);min-width:200px;}
+.gtooltip.show{display:block;}
+.gtt-title{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:6px;}
+.gtt-row{display:flex;justify-content:space-between;gap:14px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:3px;}
+.gtt-row strong{color:var(--text);}
+.gcontrols{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+.gzoom-grp{display:flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden;}
+.gzb{padding:5px 13px;background:transparent;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:10px;transition:all .15s;border:none;border-right:1px solid var(--border2);}
+.gzb:last-child{border-right:none;}.gzb:hover{color:var(--text);background:var(--surface2);}.gzb.active{background:rgba(245,166,35,.12);color:var(--accent);}
+.gpchip{padding:4px 10px;border:1px solid var(--border2);border-radius:2px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;transition:all .12s;text-transform:uppercase;background:transparent;}
+.gpchip:hover{color:var(--text);border-color:var(--muted);}.gpchip.active{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.08);}
+.gleg{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.gli{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--muted);}
+.glbox{width:10px;height:10px;border-radius:2px;}
+.gsum{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;}
+.gsum-card{flex:1;min-width:190px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px;}
+.target-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(245,166,35,.12);color:var(--accent);border:1px solid rgba(245,166,35,.3);padding:3px 9px;border-radius:2px;font-family:var(--mono);font-size:10px;font-weight:600;margin-bottom:8px;}
+.gpbar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;}
+.gpbar-fill{height:100%;border-radius:2px;}
+.gsmeta{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.bar-edit-panel{position:fixed;background:var(--surface3);border:1px solid var(--accent);border-radius:6px;padding:16px;z-index:50;min-width:280px;box-shadow:0 12px 32px rgba(0,0,0,.7);display:none;}
+.bar-edit-panel.open{display:block;animation:mIn .15s ease;}
+.bep-title{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:12px;color:var(--accent);}
+.bep-row{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.bep-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.bep-input{background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:6px 9px;color:var(--text);font-family:var(--body);font-size:12px;outline:none;width:100%;}
+.bep-input:focus{border-color:var(--accent);}
+input[type=date].bep-input{color-scheme:dark;}
+.res-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:2px;font-family:var(--mono);font-size:10px;margin:2px;}
+.res-badge-rm{cursor:pointer;opacity:.6;background:none;border:none;color:inherit;font-size:11px;}
+
+/* RESOURCE VIEW */
+.rv-day-col{min-width:150px;flex:1;}
+.rv-day-header{background:var(--surface2);border:1px solid var(--border2);border-radius:3px 3px 0 0;padding:7px 10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;}
+.rv-day-header.today{border-color:var(--accent);color:var(--accent);}
+.rv-task{background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:7px 9px;margin-bottom:5px;border-left:3px solid var(--accent2);cursor:pointer;transition:background .12s;}
+.rv-task:hover{background:var(--surface3);}
+.rv-task-proc{font-family:var(--display);font-size:13px;font-weight:700;margin-bottom:2px;}
+.rv-task-part{font-size:11px;color:var(--muted);}
+.emp-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:14px;}
+.emp-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.emp-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:13px;}
+.emp-name{font-family:var(--display);font-size:16px;font-weight:700;}
+.emp-role{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:1px;}
+.emp-week{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+.wload-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:5px;}
+.wload-fill{height:100%;border-radius:2px;background:var(--accent2);}
+
+.note{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:3px;padding:9px 13px;margin-bottom:14px;font-size:12px;color:#93c5fd;}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:120px;padding:0 0 6px;}
+.bwrap{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.bbar{width:100%;border-radius:2px 2px 0 0;position:relative;}
+.blabel{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--muted);}
+.page{animation:pgIn .2s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Asana ID chip */
+.asana-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(246,105,75,.12);color:#f6694b;border:1px solid rgba(246,105,75,.3);padding:2px 8px;border-radius:2px;font-family:var(--mono);font-size:10px;font-weight:600;}
+
+/* Import tabs */
+.import-tab-bar{display:flex;gap:0;border:1px solid var(--border2);border-radius:3px;overflow:hidden;margin-bottom:16px;}
+.import-tab{padding:7px 16px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);background:transparent;transition:all .15s;border:none;}
+.import-tab:hover{background:var(--surface2);color:var(--text);}
+.import-tab.active{background:rgba(59,130,246,.12);color:var(--accent2);}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">MFG</div>
+    <div><div class="logo-text">MANUFACT</div><div class="logo-sub">Mgmt System</div></div>
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" data-page="dashboard"><span class="ico">▦</span>Dashboard</div>
+    <div class="nav-item" data-page="parts"><span class="ico">⬡</span>Parts<span class="nbadge" id="nb-parts">7</span></div>
+    <div class="nav-item" data-page="process"><span class="ico">⟳</span>Process Tracking<span class="nbadge b">3</span></div>
+    <div class="nav-item" data-page="gantt"><span class="ico">▬</span>Gantt Chart</div>
+    <div class="nav-item" data-page="resources"><span class="ico">◉</span>Resource View<span class="nbadge g">NEW</span></div>
+  </nav>
+  <nav class="nav-section">
+    <div class="nav-label">Admin</div>
+    <div class="nav-item" data-page="projects"><span class="ico">◫</span>Projects</div>
+    <div class="nav-item" data-page="lists"><span class="ico">✎</span>List Editor</div>
+    <div class="nav-item" data-page="audit"><span class="ico">≡</span>Audit Trail</div>
+    <div class="nav-item" data-page="users"><span class="ico">◑</span>Users</div>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-chip">
+      <div class="avatar">RK</div>
+      <div><div class="uname">R. Kumar</div><div class="urole">Admin</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="breadcrumb" id="breadcrumb">MFG / <span>Dashboard</span></div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('part-modal','bulk')">⊞ Bulk Create</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('part-modal','single')">+ New Part</button>
+    </div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<!-- ═══ GANTT TOOLTIP ═══ -->
+<div class="gtooltip" id="gtooltip">
+  <div class="gtt-title" id="gtt-proc"></div>
+  <div class="gtt-row"><span>Part</span><strong id="gtt-part"></strong></div>
+  <div class="gtt-row"><span>Status</span><strong id="gtt-st"></strong></div>
+  <div class="gtt-row"><span>Duration</span><strong id="gtt-d"></strong></div>
+  <div class="gtt-row"><span>Resources</span><strong id="gtt-res"></strong></div>
+  <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;">Click to edit · Drag edges to resize</div>
+</div>
+
+<!-- ═══ BAR EDIT PANEL ═══ -->
+<div class="bar-edit-panel" id="bar-edit-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div class="bep-title" id="bep-title">Edit Process</div>
+    <button class="modal-close" onclick="closeBarEdit()">✕</button>
+  </div>
+  <div class="bep-row"><div class="bep-label">Start Date</div><input class="bep-input" type="date" id="bep-start"/></div>
+  <div class="bep-row"><div class="bep-label">Duration (days)</div><input class="bep-input" type="number" id="bep-days" min="1"/></div>
+  <div class="bep-row">
+    <div class="bep-label">Assign Resources</div>
+    <select class="bep-input" id="bep-res-sel"><option value="">— Select employee —</option></select>
+    <button class="btn btn-ghost btn-xs" style="margin-top:4px;" onclick="addGanttResource()">+ Add</button>
+    <div id="bep-res-list" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;"></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px;">
+    <button class="btn btn-primary btn-sm" onclick="saveBarEdit()" style="flex:1;">Save Changes</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeBarEdit()">Cancel</button>
+  </div>
+</div>
+
+<!-- ═══ PART MODAL ═══ -->
+<div class="backdrop" id="part-modal">
+  <div class="modal modal-wide">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="pm-title">NEW PART</div>
+        <div class="tab-bar" style="margin-bottom:0;margin-top:8px;border:none;">
+          <div class="tab active" id="tab-single" onclick="switchPartTab('single')">Single Part</div>
+          <div class="tab" id="tab-bulk" onclick="switchPartTab('bulk')">⊞ Bulk Create</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal('part-modal')">✕</button>
+    </div>
+    <!-- SINGLE -->
+    <div id="pane-single" class="modal-body">
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="fgrp" style="grid-column:1/-1"><label>Part Name</label><input class="fi" type="text" placeholder="e.g. Shaft Assembly - Main Drive"/></div>
+        <div class="fgrp"><label>Project</label><select class="fi" id="sp-project"></select></div>
+        <div class="fgrp"><label>Quantity</label><input class="fi" type="number" value="1" min="1"/></div>
+        <div class="fgrp"><label>Material Type</label><select class="fi" id="sp-mattype"></select></div>
+        <div class="fgrp"><label>Material Grade</label><select class="fi" id="sp-matgrade"></select></div>
+        <div class="fgrp"><label>Vendor</label><input class="fi" type="text" placeholder="e.g. Apex Metals"/></div>
+        <div class="fgrp"><label>PO Number</label><input class="fi" type="text" placeholder="e.g. PO-2025-0001"/></div>
+        <div class="fgrp"><label>Target Date</label><input class="fi" type="date"/></div>
+        <div class="fgrp"><label>Asana Task ID</label><input class="fi" type="text" placeholder="e.g. 1234567890123456"/></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Process Sequence</div>
+      <div id="proc-list"></div>
+      <div class="add-proc-btn" onclick="addSingleProc()">+ Add Process Step</div>
+      <div class="modal-foot" style="padding:0;border:none;margin-top:14px;">
+        <button class="btn btn-ghost" onclick="closeModal('part-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSingle()">Create Part</button>
+      </div>
+    </div>
+    <!-- BULK -->
+    <div id="pane-bulk" class="modal-body" style="display:none;">
+      <div class="import-tab-bar">
+        <div class="import-tab active" onclick="switchImportTab('manual',this)">✎ Manual Entry</div>
+        <div class="import-tab" onclick="switchImportTab('paste',this)">⊞ Paste from Excel</div>
+        <div class="import-tab" onclick="switchImportTab('file',this)">↑ Upload .xlsx / .csv</div>
+      </div>
+      <!-- MANUAL -->
+      <div id="import-manual">
+        <div class="note">⊞ Add multiple parts. Click the <strong>Processes</strong> cell to assign a sequence per row. All rows need a name and at least one process.</div>
+        <div class="bulk-wrap">
+          <table class="bulk-tbl">
+            <thead><tr>
+              <th style="width:24px;">#</th>
+              <th style="min-width:150px;">Part Name *</th>
+              <th style="width:115px;">Project</th>
+              <th style="width:48px;">Qty</th>
+              <th style="width:90px;">Mat. Type</th>
+              <th style="width:90px;">Mat. Grade</th>
+              <th style="width:90px;">Vendor</th>
+              <th style="width:100px;">PO #</th>
+              <th style="width:110px;">Target Date</th>
+              <th style="width:120px;">Asana ID</th>
+              <th style="min-width:160px;">Processes *</th>
+              <th style="width:26px;"></th>
+            </tr></thead>
+            <tbody id="bulk-tbody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="add-proc-btn" onclick="addBulkRow()">+ Add Row</div>
+          <div class="add-proc-btn" onclick="addBulkRows(5)">+ Add 5 Rows</div>
+          <span id="bulk-count" style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto;">0 rows</span>
+        </div>
+      </div>
+      <!-- PASTE -->
+      <div id="import-paste" style="display:none;">
+        <div class="note">Copy rows from Excel/Google Sheets and paste below. Expected columns: <strong>Name | Project | Qty | Mat.Type | Mat.Grade | Vendor | PO | Date | AsanaID | Process1 | Process2…</strong></div>
+        <textarea class="paste-area" id="paste-area" placeholder="Paste Excel rows here (Tab-separated)…" oninput="parsePaste()"></textarea>
+        <div id="paste-preview" style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted);"></div>
+      </div>
+      <!-- FILE -->
+      <div id="import-file" style="display:none;">
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleFileDrop(event)">
+          <div class="drop-zone-icon">📊</div>
+          <div style="font-family:var(--display);font-size:16px;font-weight:700;margin-bottom:6px;">Drop .xlsx or .csv here</div>
+          <div style="font-size:12px;color:var(--muted);">or click to browse</div>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleFileSelect(event)"/>
+        </div>
+        <div id="file-preview" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="modal-foot" style="padding:0;border:none;margin-top:14px;">
+        <button class="btn btn-ghost" onclick="clearBulk()">Clear All</button>
+        <button class="btn btn-ghost" onclick="closeModal('part-modal')">Cancel</button>
+        <button class="btn btn-primary" id="bulk-save-btn" onclick="saveBulk()">Create Parts</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROCESS PICKER ═══ -->
+<div class="backdrop" id="pp-modal" style="z-index:150;">
+  <div class="modal" style="width:360px;">
+    <div class="modal-hdr"><div class="modal-title" style="font-size:16px;">Select Processes</div><button class="modal-close" onclick="closeModal('pp-modal')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;">Select in order — numbered automatically.</div>
+      <div id="pp-opts"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('pp-modal')">Cancel</button><button class="btn btn-primary" onclick="confirmPP()">Confirm</button></div>
+  </div>
+</div>
+
+<!-- ═══ PART DETAIL MODAL ═══ -->
+<div class="backdrop" id="part-detail-modal" style="z-index:120;">
+  <div class="modal modal-xl">
+    <div class="modal-hdr">
+      <div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--accent);margin-bottom:2px;" id="pd-id"></div>
+        <div class="modal-title" id="pd-name"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('part-detail-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="pd-meta" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;"></div>
+      <div class="tab-bar" id="pd-tabs">
+        <div class="tab active" onclick="switchPDTab('timeline',this)">Process Timeline</div>
+        <div class="tab" onclick="switchPDTab('history',this)">Audit History</div>
+      </div>
+      <div id="pd-timeline"></div>
+      <div id="pd-history" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BULK ADVANCE MODAL ═══ -->
+<div class="backdrop" id="bulk-advance-modal" style="z-index:130;">
+  <div class="modal" style="width:500px;">
+    <div class="modal-hdr"><div class="modal-title">⟳ Bulk Advance Parts</div><button class="modal-close" onclick="closeModal('bulk-advance-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="note">Selected parts will all be advanced to the next process step. Only parts not yet <strong>Completed</strong> will be affected.</div>
+      <div id="ba-list" style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:4px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('bulk-advance-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="doBulkAdvance()">⟳ Advance All</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LIST EDITOR MODAL ═══ -->
+<div class="backdrop" id="list-editor-modal" style="z-index:130;">
+  <div class="modal" style="width:500px;">
+    <div class="modal-hdr"><div class="modal-title" id="le-title">Edit List</div><button class="modal-close" onclick="closeModal('list-editor-modal')">✕</button></div>
+    <div class="modal-body">
+      <div id="le-items"></div>
+      <div class="list-add-row">
+        <input class="fi" id="le-new-input" type="text" placeholder="New item name..." style="flex:1;"/>
+        <input class="fi" id="le-new-sub" type="text" placeholder="Subtitle (optional)" style="width:140px;"/>
+        <button class="btn btn-primary btn-sm" onclick="leAddItem()">+ Add</button>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('list-editor-modal')">Cancel</button><button class="btn btn-primary" onclick="leSave()">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div style="position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;gap:7px;" id="toast-wrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════
+// MUTABLE LISTS (admin-editable)
+// ═══════════════════════════════════════════════════════════════════════
+let LISTS = {
+  processes: ['Raw Material Check','Cutting','Laser Cutting','Machining','Deburring','Drilling','Welding','Buffing','Electroplating','Powder Coating','Nitriding'],
+  materialTypes: ['Metal','Alloy Steel','Stainless Steel','Aluminium','Titanium','Plastic','PTFE','Composite','Cast Iron','Inconel'],
+  materialGrades: ['SS316','SS304','Al6061','Ti-6Al-4V','Inconel 718','Cast Iron','PTFE','Al7075','EN24','EN8','SS2205'],
+  vendors: ['Apex Metals','TitanForm','Foundry Works','SealTech','HydroFlow','ProAlloy','MechParts Co','AlloyCraft'],
+  resources: [
+    {id:'E01',name:'Arjun Mehta',  role:'Machinist',    color:'#3b82f6'},
+    {id:'E02',name:'Priya Sharma', role:'Welder',        color:'#ef4444'},
+    {id:'E03',name:'Ravi Patel',   role:'Machinist',    color:'#8b5cf6'},
+    {id:'E04',name:'Sunita Rao',   role:'Fabricator',   color:'#22c55e'},
+    {id:'E05',name:'Dev Kapoor',   role:'QC Inspector', color:'#f97316'},
+    {id:'E06',name:'Anita Joshi',  role:'Welder',        color:'#06b6d4'},
+    {id:'E07',name:'Kiran Das',    role:'Coater',        color:'#eab308'},
+    {id:'E08',name:'Mohan Singh',  role:'Driller',       color:'#f472b6'},
+  ],
+  projects: ['Alpha Turbine Build','Beta Compressor Unit','Gamma Frame Fabrication'],
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// PARTS DATA
+// ═══════════════════════════════════════════════════════════════════════
+let PARTS = [
+  {id:'PT-001',name:'Main Drive Shaft',    project:'Alpha Turbine Build',    qty:2, matType:'Stainless Steel', matGrade:'SS316',       status:'In Progress', currentStep:2, vendor:'Apex Metals',   po:'PO-2024-0112', eta:'2025-03-10', processes:['Raw Material Check','Cutting','Machining','Deburring'], asanaId:'1204578901234560'},
+  {id:'PT-002',name:'Compressor Blade Set',project:'Beta Compressor Unit',   qty:12,matType:'Titanium',        matGrade:'Ti-6Al-4V',   status:'Completed',   currentStep:4, vendor:'TitanForm',     po:'PO-2024-0087', eta:'2025-02-28', processes:['Raw Material Check','Laser Cutting','Deburring','Nitriding'], asanaId:'1204578901234561'},
+  {id:'PT-003',name:'Frame Weldment A',    project:'Gamma Frame Fabrication',qty:1, matType:'Aluminium',       matGrade:'Al6061',      status:'Not Started', currentStep:0, vendor:'—',             po:'—',            eta:'—',          processes:['Raw Material Check','Cutting','Welding','Buffing','Powder Coating'], asanaId:''},
+  {id:'PT-004',name:'Bearing Housing',     project:'Alpha Turbine Build',    qty:4, matType:'Cast Iron',       matGrade:'Cast Iron',   status:'On Hold',     currentStep:1, vendor:'Foundry Works',  po:'PO-2024-0155', eta:'2025-03-20', processes:['Raw Material Check','Machining','Drilling','Deburring'], asanaId:'1204578901234562'},
+  {id:'PT-005',name:'Seal Ring Assembly',  project:'Beta Compressor Unit',   qty:6, matType:'Plastic',         matGrade:'PTFE',        status:'In Progress', currentStep:2, vendor:'SealTech',      po:'PO-2024-0201', eta:'2025-03-05', processes:['Raw Material Check','Machining','Buffing','Electroplating'], asanaId:''},
+  {id:'PT-006',name:'Coolant Manifold',    project:'Alpha Turbine Build',    qty:2, matType:'Stainless Steel', matGrade:'SS304',       status:'Completed',   currentStep:4, vendor:'HydroFlow',     po:'PO-2024-0098', eta:'2025-02-15', processes:['Raw Material Check','Laser Cutting','Welding','Powder Coating'], asanaId:'1204578901234563'},
+  {id:'PT-007',name:'Rotor Disc',          project:'Alpha Turbine Build',    qty:3, matType:'Inconel',         matGrade:'Inconel 718', status:'In Progress', currentStep:1, vendor:'ProAlloy',      po:'PO-2024-0210', eta:'2025-04-01', processes:['Raw Material Check','Machining','Drilling','Nitriding'], asanaId:'1204578901234564'},
+];
+let nextPartNum = 8;
+
+const PART_HISTORY = {
+  'PT-001':[{time:'2025-02-28 09:14',action:'UPDATE',user:'M. Singh',detail:'<strong>Machining</strong> → <span class="chg-new">In Progress</span>'},{time:'2025-02-25 11:00',action:'UPDATE',user:'M. Singh',detail:'<strong>Cutting</strong> → <span class="chg-new">Completed</span>'},{time:'2025-02-20 08:30',action:'UPDATE',user:'M. Singh',detail:'<strong>Raw Material Check</strong> → <span class="chg-new">Completed</span>'},{time:'2025-02-15 14:22',action:'UPDATE',user:'A. Patel',detail:'Vendor set to <span class="chg-new">Apex Metals</span>, PO: <strong>PO-2024-0112</strong>'},{time:'2025-02-10 09:00',action:'CREATE',user:'A. Patel',detail:'Part created in <strong>Alpha Turbine Build</strong>'}],
+  'PT-002':[{time:'2025-02-27 16:20',action:'UPDATE',user:'M. Singh',detail:'<strong>Nitriding</strong> → <span class="chg-new">Completed</span>'},{time:'2025-02-22 10:05',action:'UPDATE',user:'M. Singh',detail:'<strong>Deburring</strong> → <span class="chg-new">Completed</span>'},{time:'2025-01-25 08:00',action:'CREATE',user:'A. Patel',detail:'Part created'}],
+  'PT-003':[{time:'2025-02-27 14:10',action:'CREATE',user:'R. Kumar',detail:'Part created in <strong>Gamma Frame Fabrication</strong>'}],
+  'PT-004':[{time:'2025-02-27 17:45',action:'UPDATE',user:'A. Patel',detail:'Vendor → <span class="chg-new">Foundry Works</span>'},{time:'2025-02-26 09:00',action:'UPDATE',user:'M. Singh',detail:'<strong>Machining</strong> → <span class="chg-hold">On Hold</span>'},{time:'2025-02-12 10:00',action:'CREATE',user:'A. Patel',detail:'Part created'}],
+  'PT-005':[{time:'2025-02-27 11:33',action:'UPDATE',user:'M. Singh',detail:'<strong>Buffing</strong> → <span class="chg-new">In Progress</span>'},{time:'2025-02-08 08:00',action:'CREATE',user:'A. Patel',detail:'Part created'}],
+  'PT-006':[{time:'2025-02-26 14:00',action:'UPDATE',user:'M. Singh',detail:'<strong>Powder Coating</strong> → <span class="chg-new">Completed</span>'},{time:'2025-01-20 08:30',action:'CREATE',user:'A. Patel',detail:'Part created'}],
+  'PT-007':[{time:'2025-02-28 08:52',action:'UPDATE',user:'M. Singh',detail:'<strong>Machining</strong> → <span class="chg-new">In Progress</span>'},{time:'2025-02-20 14:30',action:'CREATE',user:'A. Patel',detail:'Part created'}],
+};
+
+let GANTT_PARTS = [
+  {id:'PT-001',name:'Main Drive Shaft',    project:'Alpha Turbine Build',    status:'In Progress',start:'2025-02-01',processes:[{name:'Raw Material Check',days:3,status:'Completed',resources:['E05']},{name:'Cutting',days:5,status:'Completed',resources:['E04']},{name:'Machining',days:10,status:'In Progress',resources:['E01','E03']},{name:'Deburring',days:3,status:'Not Started',resources:[]}]},
+  {id:'PT-002',name:'Compressor Blade Set',project:'Beta Compressor Unit',   status:'Completed',  start:'2025-01-20',processes:[{name:'Raw Material Check',days:2,status:'Completed',resources:['E05']},{name:'Laser Cutting',days:6,status:'Completed',resources:['E04']},{name:'Deburring',days:4,status:'Completed',resources:['E04']},{name:'Nitriding',days:8,status:'Completed',resources:['E07']}]},
+  {id:'PT-003',name:'Frame Weldment A',    project:'Gamma Frame Fabrication',status:'Not Started',start:'2025-03-03',processes:[{name:'Raw Material Check',days:2,status:'Not Started',resources:[]},{name:'Cutting',days:4,status:'Not Started',resources:[]},{name:'Welding',days:12,status:'Not Started',resources:[]},{name:'Buffing',days:3,status:'Not Started',resources:[]},{name:'Powder Coating',days:5,status:'Not Started',resources:['E07']}]},
+  {id:'PT-004',name:'Bearing Housing',     project:'Alpha Turbine Build',    status:'On Hold',    start:'2025-02-10',processes:[{name:'Raw Material Check',days:3,status:'Completed',resources:['E05']},{name:'Machining',days:8,status:'On Hold',resources:['E01']},{name:'Drilling',days:4,status:'Not Started',resources:['E08']},{name:'Deburring',days:2,status:'Not Started',resources:[]}]},
+  {id:'PT-005',name:'Seal Ring Assembly',  project:'Beta Compressor Unit',   status:'In Progress',start:'2025-02-05',processes:[{name:'Raw Material Check',days:2,status:'Completed',resources:['E05']},{name:'Machining',days:7,status:'Completed',resources:['E03']},{name:'Buffing',days:5,status:'In Progress',resources:['E04']},{name:'Electroplating',days:6,status:'Not Started',resources:['E07']}]},
+  {id:'PT-006',name:'Coolant Manifold',    project:'Alpha Turbine Build',    status:'Completed',  start:'2025-01-15',processes:[{name:'Raw Material Check',days:2,status:'Completed',resources:['E05']},{name:'Laser Cutting',days:5,status:'Completed',resources:['E04']},{name:'Welding',days:7,status:'Completed',resources:['E02','E06']},{name:'Powder Coating',days:5,status:'Completed',resources:['E07']}]},
+  {id:'PT-007',name:'Rotor Disc',          project:'Alpha Turbine Build',    status:'In Progress',start:'2025-02-20',processes:[{name:'Raw Material Check',days:3,status:'Completed',resources:['E05']},{name:'Machining',days:14,status:'In Progress',resources:['E01']},{name:'Drilling',days:5,status:'Not Started',resources:['E08']},{name:'Nitriding',days:10,status:'Not Started',resources:[]}]},
+];
+
+const AUDIT_LOGS = [
+  {time:'2025-02-28 09:14',action:'UPDATE',resource:'PROCESS',user:'M. Singh',detail:'PT-001 · <strong>Machining</strong> → <span class="chg-new">In Progress</span>',before:'Not Started',after:'In Progress'},
+  {time:'2025-02-28 08:52',action:'CREATE',resource:'PART',   user:'A. Patel',detail:'New part: <strong>Rotor Disc</strong> (PT-007)',before:null,after:null},
+  {time:'2025-02-28 08:30',action:'LOGIN', resource:'USER',   user:'R. Kumar',detail:'Admin login from <strong>10.0.1.12</strong>',before:null,after:null},
+  {time:'2025-02-27 17:45',action:'UPDATE',resource:'PART',   user:'A. Patel',detail:'PT-004 · Vendor → <span class="chg-new">Foundry Works</span>',before:'—',after:'Foundry Works'},
+  {time:'2025-02-27 16:20',action:'UPDATE',resource:'PROCESS',user:'M. Singh',detail:'PT-002 · <strong>Nitriding</strong> → <span class="chg-new">Completed</span>',before:'In Progress',after:'Completed'},
+];
+const PROJECTS_DATA = [
+  {name:'Alpha Turbine Build',parts:4,active:true,desc:'High-temperature turbine components'},
+  {name:'Beta Compressor Unit',parts:2,active:true,desc:'Air compressor parts for HVAC'},
+  {name:'Gamma Frame Fabrication',parts:1,active:true,desc:'Structural frame weldments'},
+];
+
+const PROJ_COLORS = {'Alpha Turbine Build':'#f5a623','Beta Compressor Unit':'#3b82f6','Gamma Frame Fabrication':'#22c55e'};
+const PROC_COLORS = {'Raw Material Check':['#252830','#6b7280'],'Cutting':['#1e3a5f','#3b82f6'],'Laser Cutting':['#1a3a4a','#06b6d4'],'Machining':['#2d2060','#818cf8'],'Deburring':['#1a3020','#4ade80'],'Drilling':['#3b2a10','#fb923c'],'Welding':['#3b1414','#f87171'],'Buffing':['#2a2810','#facc15'],'Electroplating':['#1a2a3b','#60a5fa'],'Powder Coating':['#2a1040','#c084fc'],'Nitriding':['#102a28','#34d399']};
+
+// ═══════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════
+function sBadge(st){const m={'Completed':'s-comp','In Progress':'s-prog','On Hold':'s-hold','Not Started':'s-ns'};return `<span class="sbadge ${m[st]||'s-ns'}">${st}</span>`;}
+function pipeline(procs,step,st){return procs.map((p,i)=>{const cls=st==='Completed'?'p-done':i<step?'p-done':(i===step&&st==='In Progress')?'p-active':'p-pending';return `<div class="pstep">${i>0?'<div class="parrow">›</div>':''}<div class="pnode ${cls}">${p}</div></div>`;}).join('');}
+const addD=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+const dBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
+const fmt=d=>new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+const fmtL=d=>new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const fmtISO=d=>{const x=new Date(d);return x.toISOString().split('T')[0];};
+const sowMon=d=>{const r=new Date(d);r.setDate(r.getDate()-((r.getDay()+6)%7));return r;};
+const pEnd=p=>p.processes.reduce((d,pr)=>addD(d,pr.days),new Date(p.start));
+const empById=id=>LISTS.resources.find(e=>e.id===id);
+const empInitials=ids=>ids.map(id=>{const e=empById(id);return e?e.name.split(' ').map(x=>x[0]).join(''):id;}).join(', ');
+function makeSelectOpts(arr,sel=''){return arr.map(v=>`<option${v===sel?' selected':''}>${v}</option>`).join('');}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ROUTING
+// ═══════════════════════════════════════════════════════════════════════
+const PAGE_TITLES={dashboard:'Dashboard',parts:'Parts Management',process:'Process Tracking',gantt:'Gantt Chart',resources:'Resource View',projects:'Projects',lists:'List Editor',audit:'Audit Trail',users:'User Management'};
+function showPage(page){
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+  document.getElementById('breadcrumb').innerHTML=`MFG / <span>${PAGE_TITLES[page]||page}</span>`;
+  const R={dashboard:renderDashboard,parts:renderParts,process:renderProcess,gantt:renderGantt,resources:renderResources,projects:renderProjects,lists:renderLists,audit:renderAudit,users:renderUsers};
+  document.getElementById('content').innerHTML=(R[page]||renderDashboard)();
+  if(page==='parts'){resetFilters();setTimeout(renderPartsTable,0);}
+  if(page==='gantt')setTimeout(drawGantt,0);
+  if(page==='resources')setTimeout(renderResourceCards,0);
+}
+document.querySelectorAll('.nav-item[data-page]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.page)));
+
+// ═══════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const total=PARTS.length,comp=PARTS.filter(p=>p.status==='Completed').length,prog=PARTS.filter(p=>p.status==='In Progress').length,hold=PARTS.filter(p=>p.status==='On Hold').length;
+  return `<div class="page">
+  <div class="grid4">
+    <div class="card metric-card"><div class="metric-label">Total Parts</div><div class="metric-val" style="color:var(--accent)">${total}</div><div class="metric-sub">Across ${PROJECTS_DATA.length} projects</div><div class="metric-ico">⬡</div><div class="mbar"><div class="mbar-fill" style="width:100%;background:var(--accent)"></div></div></div>
+    <div class="card metric-card"><div class="metric-label">Completed</div><div class="metric-val" style="color:var(--green)">${comp}</div><div class="metric-sub">${Math.round(comp/total*100)}% rate</div><div class="mbar"><div class="mbar-fill" style="width:${comp/total*100}%;background:var(--green)"></div></div></div>
+    <div class="card metric-card"><div class="metric-label">In Progress</div><div class="metric-val" style="color:var(--accent2)">${prog}</div><div class="metric-sub">Active manufacturing</div><div class="mbar"><div class="mbar-fill" style="width:${prog/total*100}%;background:var(--accent2)"></div></div></div>
+    <div class="card metric-card"><div class="metric-label">On Hold</div><div class="metric-val" style="color:var(--yellow)">${hold}</div><div class="metric-sub">Needs attention</div><div class="mbar"><div class="mbar-fill" style="width:${hold/total*100}%;background:var(--yellow)"></div></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="section-hdr"><div><div class="section-title">Process Bottlenecks</div></div></div><div class="bar-chart">${[['Machining',3,'#818cf8'],['Laser Cut',1,'#06b6d4'],['Deburring',2,'#f5a623'],['Welding',1,'#4ade80'],['Nitriding',2,'#a855f7']].map(([l,v,c])=>`<div class="bwrap"><div class="bbar" style="height:${v*34}px;background:${c};opacity:.85;border-radius:2px 2px 0 0;"></div><div class="blabel">${l}</div></div>`).join('')}</div></div>
+    <div class="card"><div class="section-hdr"><div><div class="section-title">Recent Activity</div></div><button class="btn btn-ghost btn-sm" onclick="showPage('audit')">View All</button></div>${AUDIT_LOGS.slice(0,5).map(l=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);"><div class="aaction a-${l.action.toLowerCase()}" style="flex-shrink:0;margin-top:1px;">${l.action}</div><div><div style="font-size:12px;">${l.detail}</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">${l.user} · ${l.time.split(' ')[1]}</div></div></div>`).join('')}</div>
+  </div>
+  <div class="card" style="margin-top:18px;"><div class="section-hdr"><div><div class="section-title">Projects</div></div><div style="display:flex;gap:8px;"><button class="btn btn-ghost btn-sm" onclick="showPage('resources')">◉ Resources</button><button class="btn btn-ghost btn-sm" onclick="showPage('gantt')">▬ Gantt</button></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">${PROJECTS_DATA.map(p=>`<div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:14px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-family:var(--display);font-size:15px;font-weight:700;">${p.name}</div>${sBadge('In Progress')}</div><div style="font-size:12px;color:var(--muted);margin-bottom:8px;">${p.desc}</div><div style="font-family:var(--mono);font-size:11px;color:var(--accent);">${p.parts} PARTS</div></div>`).join('')}</div>
+  </div>
+</div>`;}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PARTS — with filters, bulk select, per-part audit
+// ═══════════════════════════════════════════════════════════════════════
+let activeF={search:'',status:[],process:[],vendor:[],project:[],matType:'',po:''};
+let selectedPartIds=new Set();
+
+function resetFilters(){activeF={search:'',status:[],process:[],vendor:[],project:[],matType:'',po:''};selectedPartIds=new Set();}
+
+function renderParts(){
+  return `<div class="page">
+  <div class="section-hdr">
+    <div><div class="section-title">Parts Management</div><div class="section-sub">Click any row to view history · Check rows to bulk-edit</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('part-modal','bulk')">⊞ Bulk Create</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('part-modal','single')">+ New Part</button>
+    </div>
+  </div>
+
+  <!-- BULK EDIT BAR -->
+  <div class="bulk-edit-bar" id="bulk-edit-bar">
+    <span class="beb-count" id="beb-count">0 selected</span>
+    <button class="btn btn-ghost btn-sm" onclick="doBulkAdvanceOpen()">⟳ Advance Step</button>
+    <button class="btn btn-ghost btn-sm" onclick="bulkEditStatus()">✎ Change Status</button>
+    <select id="bulk-status-sel" style="background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:5px 9px;color:var(--text);font-size:12px;outline:none;">
+      <option value="">— New Status —</option>
+      <option>In Progress</option><option>Completed</option><option>On Hold</option><option>Not Started</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" onclick="clearSelection()" style="margin-left:auto;color:var(--muted);">✕ Deselect All</button>
+  </div>
+
+  <!-- SEARCH + FILTER ROW -->
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+    <input id="psearch" type="text" placeholder="🔍  Search name, ID, material..." oninput="applyF()"
+      style="background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:7px 11px;color:var(--text);font-family:var(--body);font-size:13px;outline:none;width:240px;"/>
+    <select id="po-filter-sel" onchange="applyF()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;">
+      <option value="">All PO Numbers</option>
+      ${[...new Set(PARTS.map(p=>p.po).filter(p=>p&&p!=='—'))].map(po=>`<option>${po}</option>`).join('')}
+    </select>
+    <select id="mat-filter-sel" onchange="applyF()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;">
+      <option value="">All Material Types</option>
+      ${LISTS.materialTypes.map(m=>`<option>${m}</option>`).join('')}
+    </select>
+    <button class="btn btn-ghost btn-sm" onclick="toggleFP()">⚙ More Filters <span id="fbadge" style="display:none;background:var(--accent);color:#000;font-family:var(--mono);font-size:9px;padding:1px 4px;border-radius:2px;margin-left:4px;"></span></button>
+    <button class="btn btn-ghost btn-sm" id="fclr-btn" onclick="clearAllF()" style="display:none;color:var(--red);border-color:rgba(239,68,68,.3);">✕ Clear</button>
+  </div>
+
+  <!-- ADVANCED FILTER PANEL -->
+  <div class="filter-panel" id="filter-panel">
+    <div class="fp-grid-2">
+      <div><div class="fp-label">Status</div><div class="fp-chips">${['In Progress','Completed','On Hold','Not Started'].map(s=>`<div class="fp-chip" data-val="${s}" onclick="toggleF('status',this)">${s}</div>`).join('')}</div></div>
+      <div><div class="fp-label">Project</div><div class="fp-chips">${LISTS.projects.map(s=>`<div class="fp-chip" data-val="${s}" onclick="toggleF('project',this)">${s}</div>`).join('')}</div></div>
+      <div><div class="fp-label">Vendor</div><div class="fp-chips">${LISTS.vendors.map(s=>`<div class="fp-chip" data-val="${s}" onclick="toggleF('vendor',this)">${s}</div>`).join('')}</div></div>
+      <div><div class="fp-label">Has Process</div><div class="fp-chips">${LISTS.processes.map(s=>`<div class="fp-chip" data-val="${s}" onclick="toggleF('process',this)">${s}</div>`).join('')}</div></div>
+    </div>
+  </div>
+  <div class="active-tags" id="active-tags" style="display:none;"></div>
+  <div class="res-count" id="res-count"></div>
+
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:36px;"><input type="checkbox" class="row-check" onchange="toggleSelectAll(this)"/></th>
+          <th>Part ID</th><th>Part Name</th><th>Project</th><th>Qty</th><th>Material</th><th>Grade</th><th>Vendor</th><th>PO #</th><th>Status</th><th>Asana</th><th style="min-width:220px;">Pipeline</th>
+        </tr></thead>
+        <tbody id="parts-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>`;}
+
+function applyF(){
+  activeF.search=(document.getElementById('psearch')?.value||'').toLowerCase();
+  activeF.po=(document.getElementById('po-filter-sel')?.value||'');
+  activeF.matType=(document.getElementById('mat-filter-sel')?.value||'');
+  renderPartsTable();updateFUI();
+}
+function toggleF(type,el){const val=el.dataset.val,idx=activeF[type].indexOf(val);if(idx>=0){activeF[type].splice(idx,1);el.classList.remove('sel','sel-p');}else{activeF[type].push(val);el.classList.add(type==='process'?'sel-p':'sel');}renderPartsTable();updateFUI();}
+function clearAllF(){resetFilters();['psearch','po-filter-sel','mat-filter-sel'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.querySelectorAll('.fp-chip').forEach(c=>c.classList.remove('sel','sel-p'));renderPartsTable();updateFUI();}
+function toggleFP(){document.getElementById('filter-panel').classList.toggle('open');}
+function updateFUI(){
+  const tags=[];let cnt=0;
+  ['status','project','vendor','process'].forEach(t=>{activeF[t].forEach(v=>{cnt++;tags.push(`<div class="atag${t==='process'?' pt':''}"><span style="font-size:9px;color:var(--muted);text-transform:uppercase;">${t}:</span>${v}<button class="atag-rm" onclick="removeF('${t}','${v}')">✕</button></div>`);});});
+  if(activeF.matType){cnt++;tags.push(`<div class="atag pt">mat: ${activeF.matType}<button class="atag-rm" onclick="clearMatFilter()">✕</button></div>`);}
+  if(activeF.po){cnt++;tags.push(`<div class="atag">po: ${activeF.po}<button class="atag-rm" onclick="clearPOFilter()">✕</button></div>`);}
+  if(activeF.search)tags.push(`<div class="atag">"${activeF.search}"<button class="atag-rm" onclick="clearSearch()">✕</button></div>`);
+  const bar=document.getElementById('active-tags');if(!bar)return;
+  bar.innerHTML=tags.join('');bar.style.display=tags.length?'flex':'none';
+  const cb=document.getElementById('fclr-btn');if(cb)cb.style.display=tags.length?'block':'none';
+  const badge=document.getElementById('fbadge');if(badge){badge.textContent=cnt;badge.style.display=cnt?'inline':'none';}
+}
+function removeF(type,val){activeF[type]=activeF[type].filter(v=>v!==val);document.querySelectorAll(`.fp-chip[data-val="${val}"]`).forEach(c=>c.classList.remove('sel','sel-p'));renderPartsTable();updateFUI();}
+function clearSearch(){activeF.search='';if(document.getElementById('psearch'))document.getElementById('psearch').value='';renderPartsTable();updateFUI();}
+function clearMatFilter(){activeF.matType='';const s=document.getElementById('mat-filter-sel');if(s)s.value='';renderPartsTable();updateFUI();}
+function clearPOFilter(){activeF.po='';const s=document.getElementById('po-filter-sel');if(s)s.value='';renderPartsTable();updateFUI();}
+
+function filteredParts(){
+  return PARTS.filter(p=>{
+    const q=activeF.search;
+    if(q&&!([p.id,p.name,p.matType,p.matGrade,p.project,p.vendor||'',p.po||'',p.asanaId||''].join(' ').toLowerCase().includes(q)))return false;
+    if(activeF.status.length&&!activeF.status.includes(p.status))return false;
+    if(activeF.project.length&&!activeF.project.includes(p.project))return false;
+    if(activeF.vendor.length&&!activeF.vendor.includes(p.vendor))return false;
+    if(activeF.process.length&&!activeF.process.every(pr=>p.processes.includes(pr)))return false;
+    if(activeF.matType&&p.matType!==activeF.matType)return false;
+    if(activeF.po&&p.po!==activeF.po)return false;
+    return true;
+  });
+}
+
+function renderPartsTable(){
+  const tbody=document.getElementById('parts-tbody'),rc=document.getElementById('res-count');
+  if(!tbody)return;
+  const fp=filteredParts();
+  if(rc)rc.innerHTML=`Showing <strong>${fp.length}</strong> of <strong>${PARTS.length}</strong> parts`;
+  tbody.innerHTML=fp.map(p=>`<tr class="${selectedPartIds.has(p.id)?'selected':''}">
+    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${selectedPartIds.has(p.id)?'checked':''} onchange="toggleSelectPart('${p.id}',this)"/></td>
+    <td style="cursor:pointer;" onclick="openPartDetail('${p.id}')"><span style="font-family:var(--mono);font-size:11px;color:var(--accent);">${p.id}</span></td>
+    <td style="cursor:pointer;" onclick="openPartDetail('${p.id}')"><strong>${p.name}</strong></td>
+    <td style="font-size:12px;color:var(--muted);">${p.project}</td>
+    <td style="font-family:var(--mono);">${p.qty}</td>
+    <td style="font-size:12px;">${p.matType}</td>
+    <td style="font-family:var(--mono);font-size:11px;">${p.matGrade}</td>
+    <td style="font-size:12px;color:var(--muted);">${p.vendor||'—'}</td>
+    <td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${p.po||'—'}</td>
+    <td>${sBadge(p.status)}</td>
+    <td>${p.asanaId?`<span class="asana-chip">⚓ ${p.asanaId.slice(-6)}</span>`:'<span style="color:var(--border2);">—</span>'}</td>
+    <td><div class="pipeline">${pipeline(p.processes,p.currentStep,p.status)}</div></td>
+  </tr>`).join('');
+}
+
+// SELECTION
+function toggleSelectPart(id,el){if(el.checked)selectedPartIds.add(id);else selectedPartIds.delete(id);updateBulkEditBar();}
+function toggleSelectAll(el){const fp=filteredParts();fp.forEach(p=>{if(el.checked)selectedPartIds.add(p.id);else selectedPartIds.delete(p.id);});renderPartsTable();updateBulkEditBar();}
+function clearSelection(){selectedPartIds.clear();renderPartsTable();updateBulkEditBar();}
+function updateBulkEditBar(){
+  const bar=document.getElementById('bulk-edit-bar'),cnt=document.getElementById('beb-count');
+  if(!bar||!cnt)return;
+  bar.classList.toggle('show',selectedPartIds.size>0);
+  cnt.textContent=`${selectedPartIds.size} part${selectedPartIds.size!==1?'s':''} selected`;
+}
+function bulkEditStatus(){
+  const sel=document.getElementById('bulk-status-sel')?.value;
+  if(!sel)return;
+  PARTS.forEach(p=>{if(selectedPartIds.has(p.id))p.status=sel;});
+  toast(`Status set to "${sel}" for ${selectedPartIds.size} parts`);
+  clearSelection();
+}
+
+// BULK ADVANCE
+function doBulkAdvanceOpen(){
+  const sel=[...selectedPartIds].map(id=>PARTS.find(p=>p.id===id)).filter(Boolean).filter(p=>p.status!=='Completed');
+  if(!sel.length){toast('No advanceable parts selected','err');return;}
+  const list=document.getElementById('ba-list');
+  list.innerHTML=sel.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);">
+    <div><div style="font-family:var(--mono);font-size:11px;color:var(--accent);">${p.id}</div><div style="font-size:13px;font-weight:600;">${p.name}</div><div style="font-size:12px;color:var(--muted);">${p.status} · Step ${p.currentStep+1}/${p.processes.length}</div></div>
+    <div style="text-align:right;font-size:12px;color:var(--muted);">Current: <strong style="color:var(--text);">${p.processes[p.currentStep]||'Done'}</strong><br>→ Next: <strong style="color:var(--accent2);">${p.processes[p.currentStep+1]||'Complete'}</strong></div>
+  </div>`).join('');
+  document.getElementById('bulk-advance-modal').classList.add('open');
+}
+function doBulkAdvance(){
+  const sel=[...selectedPartIds].map(id=>PARTS.find(p=>p.id===id)).filter(Boolean).filter(p=>p.status!=='Completed');
+  sel.forEach(p=>{
+    if(p.currentStep<p.processes.length-1){p.currentStep++;p.status='In Progress';}
+    else{p.status='Completed';}
+  });
+  closeModal('bulk-advance-modal');
+  toast(`Advanced ${sel.length} parts to next step`);
+  clearSelection();
+}
+
+// PART DETAIL MODAL
+function openPartDetail(partId){
+  const p=PARTS.find(x=>x.id===partId);if(!p)return;
+  document.getElementById('pd-id').textContent=p.id;
+  document.getElementById('pd-name').textContent=p.name;
+  document.getElementById('pd-meta').innerHTML=`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Project</div><div style="font-size:13px;font-weight:600;">${p.project}</div></div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Status</div><div>${sBadge(p.status)}</div></div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Material</div><div style="font-family:var(--mono);font-size:12px;">${p.matType} / ${p.matGrade}</div></div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Asana ID</div><div>${p.asanaId?`<span class="asana-chip">⚓ ${p.asanaId}</span>`:'<span style="color:var(--muted);">Not linked</span>'}</div></div>`;
+  switchPDTab('timeline',null,p);
+  document.getElementById('part-detail-modal').classList.add('open');
+}
+function switchPDTab(tab,el,partOverride){
+  const p=partOverride||(PARTS.find(x=>x.id===document.getElementById('pd-id').textContent));
+  if(!p)return;
+  document.querySelectorAll('#pd-tabs .tab').forEach((t,i)=>{t.classList.toggle('active',(i===0&&tab==='timeline')||(i===1&&tab==='history'));});
+  document.getElementById('pd-timeline').style.display=tab==='timeline'?'block':'none';
+  document.getElementById('pd-history').style.display=tab==='history'?'block':'none';
+  if(tab==='timeline'){
+    document.getElementById('pd-timeline').innerHTML=`
+    <div style="display:flex;gap:0;flex-wrap:nowrap;overflow-x:auto;padding:16px 0;align-items:flex-start;">
+      ${p.processes.map((proc,i)=>{
+        const st=p.status==='Completed'?'Completed':i<p.currentStep?'Completed':(i===p.currentStep&&p.status==='In Progress')?'In Progress':'Not Started';
+        const c=st==='Completed'?'var(--green)':st==='In Progress'?'var(--accent2)':'var(--muted)';
+        return `${i>0?`<div style="width:28px;height:2px;background:${i<=p.currentStep?'var(--green)':'var(--border2)'};margin-top:28px;flex-shrink:0;"></div>`:''}
+        <div style="flex-shrink:0;width:130px;background:${st==='Completed'?'rgba(34,197,94,.08)':st==='In Progress'?'rgba(59,130,246,.08)':'var(--surface2)'};border:1px solid ${c}33;border-radius:4px;padding:12px;text-align:center;">
+          <div style="font-size:18px;margin-bottom:4px;">${st==='Completed'?'✓':st==='In Progress'?'⟳':'○'}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:${c};text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">${st}</div>
+          <div style="font-size:12px;font-weight:600;">${proc}</div>
+          <div style="font-family:var(--display);font-size:11px;color:var(--muted);margin-top:3px;">Step ${i+1}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:20px;flex-wrap:wrap;font-size:13px;">
+      <div><span style="color:var(--muted);">Qty:</span> <strong>${p.qty}</strong></div>
+      <div><span style="color:var(--muted);">Vendor:</span> <strong>${p.vendor}</strong></div>
+      <div><span style="color:var(--muted);">PO:</span> <span style="font-family:var(--mono);">${p.po}</span></div>
+      <div><span style="color:var(--muted);">ETA:</span> <strong>${p.eta}</strong></div>
+    </div>`;
+  } else {
+    const history=PART_HISTORY[p.id]||[];
+    document.getElementById('pd-history').innerHTML=`
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em;">${history.length} audit events for ${p.id}</div>
+    <div style="border:1px solid var(--border);border-radius:4px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:140px 60px 1fr;gap:8px;padding:8px 14px;background:var(--surface2);border-bottom:2px solid var(--border2);">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Timestamp</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Action</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Detail</div>
+      </div>
+      ${history.length===0?`<div style="padding:30px;text-align:center;color:var(--muted);font-family:var(--mono);">No history yet</div>`:''}
+      ${history.map(l=>`<div class="audit-entry-sm"><div class="audit-time-sm">${l.time}<br><span style="font-size:9px;">${l.user}</span></div><div><div class="aaction a-${l.action.toLowerCase()}">${l.action}</div></div><div style="color:var(--muted);font-size:12px;line-height:1.5;">${l.detail}</div></div>`).join('')}
+    </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PROCESS TRACKING
+// ═══════════════════════════════════════════════════════════════════════
+let procTab='In Progress';
+function renderProcess(){
+  const tabs=['In Progress','On Hold','Not Started','Completed'];
+  return `<div class="page"><div class="section-hdr"><div><div class="section-title">Process Tracking</div></div></div>
+  <div class="tab-bar">${tabs.map(t=>`<div class="tab${t===procTab?' active':''}" onclick="switchProcTab('${t}',this)">${t} <span style="font-family:var(--mono);font-size:10px;">(${PARTS.filter(p=>p.status===t).length})</span></div>`).join('')}</div>
+  <div id="proc-cards">${renderProcCards()}</div></div>`;}
+function switchProcTab(tab,el){procTab=tab;document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('proc-cards').innerHTML=renderProcCards();}
+function renderProcCards(){
+  const list=PARTS.filter(p=>p.status===procTab);
+  if(!list.length)return `<div style="text-align:center;padding:50px;color:var(--muted);font-family:var(--mono);">NO PARTS IN THIS STATUS</div>`;
+  return list.map(p=>`<div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+      <div><div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;"><span style="font-family:var(--mono);font-size:11px;color:var(--accent);">${p.id}</span>${sBadge(p.status)}${p.asanaId?`<span class="asana-chip">⚓ ${p.asanaId.slice(-6)}</span>`:''}</div><div style="font-family:var(--display);font-size:19px;font-weight:700;">${p.name}</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">${p.project} · Qty:${p.qty} · ${p.matType} ${p.matGrade}</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="openPartDetail('${p.id}')">View History</button>
+    </div>
+    <div class="pipeline" style="margin-bottom:12px;">${pipeline(p.processes,p.currentStep,p.status)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <select style="background:var(--surface2);border:1px solid var(--border2);padding:6px 10px;color:var(--text);border-radius:3px;font-size:13px;outline:none;">${['In Progress','Completed','On Hold','Not Started'].map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('')}</select>
+      <input type="text" placeholder="Vendor" value="${p.vendor!=='—'?p.vendor:''}" style="background:var(--surface2);border:1px solid var(--border2);padding:6px 10px;color:var(--text);border-radius:3px;font-size:12px;outline:none;width:140px;"/>
+      <input type="text" placeholder="PO #" value="${p.po!=='—'?p.po:''}" style="background:var(--surface2);border:1px solid var(--border2);padding:6px 10px;color:var(--text);border-radius:3px;font-family:var(--mono);font-size:11px;outline:none;width:130px;"/>
+      <input type="date" value="${p.eta&&p.eta!=='—'?p.eta:''}" style="background:var(--surface2);border:1px solid var(--border2);padding:6px 10px;color:var(--text);border-radius:3px;font-size:12px;outline:none;color-scheme:dark;"/>
+      <button class="btn btn-primary btn-sm" onclick="toast('Saved for ${p.id}')">Save</button>
+      ${p.currentStep<p.processes.length-1&&p.status!=='Completed'?`<button class="btn btn-ghost btn-sm" onclick="toast('Advanced PT')">→ Advance</button>`:''}
+    </div>
+  </div>`).join('');}
+
+// ═══════════════════════════════════════════════════════════════════════
+// GANTT
+// ═══════════════════════════════════════════════════════════════════════
+let gZoom='week',gProjFilter='ALL',editingBar=null;
+
+function renderGantt(){
+  return `<div class="page">
+  <div class="section-hdr"><div><div class="section-title">Gantt Chart</div><div class="section-sub">Click any bar to edit dates & assign resources · Drag edges to resize</div></div></div>
+  <div class="gcontrols">
+    <div class="gzoom-grp"><div class="gzb active" id="gzw" onclick="setGZoom('week',this)">Weekly</div><div class="gzb" id="gzm" onclick="setGZoom('month',this)">Monthly</div></div>
+    <div style="width:1px;height:18px;background:var(--border2);"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="gpf-chips">
+      <div class="gpchip active" onclick="setGPF(this,'ALL')">All Projects</div>
+      ${LISTS.projects.map(p=>`<div class="gpchip" onclick="setGPF(this,'${p}')">${p}</div>`).join('')}
+    </div>
+    <div style="width:1px;height:18px;background:var(--border2);"></div>
+    <div class="gleg">
+      <div class="gli"><div class="glbox" style="background:var(--green);opacity:.7;"></div>Completed</div>
+      <div class="gli"><div class="glbox" style="background:var(--accent2);"></div>In Progress</div>
+      <div class="gli"><div class="glbox" style="background:var(--yellow);opacity:.7;"></div>On Hold</div>
+      <div class="gli"><div class="glbox" style="background:#252830;border:1px solid var(--border2);"></div>Not Started</div>
+      <div class="gli"><div style="width:18px;height:0;border-top:2px dashed var(--accent);opacity:.8;"></div>Target</div>
+      <div class="gli"><div style="width:2px;height:13px;background:var(--red);opacity:.7;"></div>Today</div>
+    </div>
+  </div>
+  <div id="gantt-container"></div>
+  <div class="gsum" id="gsum"></div>
+</div>`;}
+
+function setGZoom(z,el){gZoom=z;document.querySelectorAll('.gzb').forEach(b=>b.classList.remove('active'));el.classList.add('active');drawGantt();}
+function setGPF(el,pf){gProjFilter=pf;document.querySelectorAll('.gpchip').forEach(c=>c.classList.remove('active'));el.classList.add('active');drawGantt();}
+
+function drawGantt(){
+  const gc=document.getElementById('gantt-container');if(!gc)return;
+  const filtered=gProjFilter==='ALL'?GANTT_PARTS:GANTT_PARTS.filter(p=>p.project===gProjFilter);
+  if(!filtered.length){gc.innerHTML='<div style="padding:50px;text-align:center;color:var(--muted);font-family:var(--mono);">NO PARTS</div>';return;}
+  let mn=new Date('2099-01-01'),mx=new Date('2000-01-01');
+  filtered.forEach(p=>{const s=new Date(p.start),e=pEnd(p);if(s<mn)mn=s;if(e>mx)mx=e;});
+  mn=sowMon(addD(mn,-7));mx=addD(mx,21);
+  const DAY=gZoom==='week'?22:10,totalPx=dBetween(mn,mx)*DAY,LABEL=230;
+  const today=new Date();today.setHours(0,0,0,0);const todayPx=dBetween(mn,today)*DAY;
+  const months=[];let mc=new Date(mn.getFullYear(),mn.getMonth(),1);
+  while(mc<=mx){const me=new Date(mc.getFullYear(),mc.getMonth()+1,0);const mfrom=mc<mn?mn:mc,mto=me>mx?mx:me;months.push({label:mc.toLocaleString('default',{month:'short',year:'2-digit'}),days:dBetween(mfrom,addD(mto,1))});mc=new Date(mc.getFullYear(),mc.getMonth()+1,1);}
+  const weeks=[];let wc=new Date(mn);while(wc<mx){const wd=Math.min(7,dBetween(wc,mx));weeks.push({label:fmt(wc),days:wd});wc=addD(wc,7);}
+  const gridLines=h=>months.map(m=>`<div class="ggridl ml" style="width:${m.days*DAY}px;height:${h}px;flex-shrink:0;"></div>`).join('');
+  const todayLine=h=>(todayPx>=0&&todayPx<=totalPx)?`<div class="gtoday" style="left:${todayPx}px;height:${h}px;"></div>`:'';
+  const groups={};filtered.forEach(p=>{if(!groups[p.project])groups[p.project]=[];groups[p.project].push(p);});
+
+  let html=`<div class="card" style="padding:0;overflow:hidden;"><div class="gantt-outer"><div class="gantt-wrap" style="width:${LABEL+totalPx}px;">
+  <div class="gh-row">
+    <div class="glabel-col"><div class="glabel-head">PART / PROJECT</div></div>
+    <div class="gtl-head" style="width:${totalPx}px;min-width:${totalPx}px;">
+      <div class="gmonth-row">${months.map(m=>`<div class="gmonth-cell" style="width:${m.days*DAY}px;min-width:${m.days*DAY}px;">${m.label}</div>`).join('')}</div>
+      <div class="gweek-row">${gZoom==='week'?weeks.map(w=>`<div class="gweek-cell" style="width:${w.days*DAY}px;min-width:${w.days*DAY}px;">${w.label}</div>`).join(''):months.map(m=>`<div class="gweek-cell" style="width:${m.days*DAY}px;min-width:${m.days*DAY}px;"></div>`).join('')}</div>
+    </div>
+  </div>`;
+
+  const summaries=[];
+  LISTS.projects.forEach(proj=>{
+    if(!groups[proj])return;
+    const pparts=groups[proj],color=PROJ_COLORS[proj]||'#888';
+    let pS=new Date('2099-01-01'),pE=new Date('2000-01-01');
+    pparts.forEach(p=>{const s=new Date(p.start),e=pEnd(p);if(s<pS)pS=s;if(e>pE)pE=e;});
+    const psOff=dBetween(mn,pS)*DAY,peOff=dBetween(mn,pE)*DAY;
+    const comp=pparts.filter(p=>p.status==='Completed').length,pct=Math.round(comp/pparts.length*100);
+    summaries.push({proj,color,pE,comp,total:pparts.length,pct,daysLeft:dBetween(today,pE)});
+    html+=`<div class="gproj-row"><div class="gproj-label"><div style="width:10px;height:10px;border-radius:2px;flex-shrink:0;background:${color};"></div><div><div class="gproj-name" style="color:${color};">${proj}</div><div class="gproj-meta">${pparts.length} parts · Target: ${fmtL(pE)}</div></div></div>
+    <div class="gproj-bar-area" style="height:50px;position:relative;"><div class="ggrid" style="height:50px;">${gridLines(50)}</div>
+    <div class="gproj-span" style="left:${psOff}px;width:${peOff-psOff}px;background:${color};"></div>
+    <div style="position:absolute;left:${psOff}px;height:22px;top:14px;width:${peOff-psOff}px;border-radius:3px;background:${color}22;border:1px solid ${color}44;display:flex;align-items:center;padding:0 8px;font-family:var(--mono);font-size:9px;color:${color};white-space:nowrap;overflow:hidden;">${fmt(pS)} → ${fmtL(pE)}</div>
+    <div class="gtarget" style="left:${peOff}px;height:50px;border-left-color:${color};opacity:.6;"></div>${todayLine(50)}</div></div>`;
+    pparts.forEach(p=>{
+      const partIdx=GANTT_PARTS.indexOf(p);let cursor=new Date(p.start);
+      const pEndDate=pEnd(p),ptOff=dBetween(mn,pEndDate)*DAY;
+      const bars=p.processes.map((proc,pi)=>{
+        const left=dBetween(mn,cursor)*DAY,w=proc.days*DAY;
+        const pc=PROC_COLORS[proc.name]||['#252830','#888'];
+        const bg=proc.status==='Completed'?pc[1]+'88':proc.status==='In Progress'?pc[1]:proc.status==='On Hold'?'#eab30877':pc[0];
+        const startStr=fmtISO(cursor);cursor=addD(cursor,proc.days);
+        const resLabel=proc.resources.length?empInitials(proc.resources):'';
+        return `<div class="gproc-bar" id="bar-${partIdx}-${pi}" style="left:${left}px;width:${Math.max(w-2,4)}px;background:${bg};border:1px solid ${pc[1]}55;"
+          onclick="openBarEdit(event,${partIdx},${pi},'${startStr}')"
+          onmouseenter="showGTT(event,'${proc.name.replace(/'/g,"\\'")}','${p.name.replace(/'/g,"\\'")}','${proc.status}','${proc.days}','${resLabel}')"
+          onmouseleave="hideGTT()">
+          ${w>55?`<span style="color:#fff;font-size:8px;overflow:hidden;text-overflow:ellipsis;">${proc.name}</span>`:''}
+          ${proc.resources.length?`<div class="res-chip">◉ ${resLabel}</div>`:''}
+          <div class="resize-handle rh-left" onmousedown="startResize(event,${partIdx},${pi},'left')" onclick="event.stopPropagation()"></div>
+          <div class="resize-handle rh-right" onmousedown="startResize(event,${partIdx},${pi},'right')" onclick="event.stopPropagation()"></div>
+        </div>`;
+      }).join('');
+      html+=`<div class="gpart-row"><div class="gpart-label"><div class="gpart-id">${p.id}</div><div><div class="gpart-nm">${p.name}</div><div class="gpart-due">Due: ${fmt(pEndDate)}</div></div></div>
+      <div class="gbar-area" style="height:52px;position:relative;"><div class="ggrid" style="height:52px;">${gridLines(52)}</div>${bars}<div class="gtarget" style="left:${ptOff}px;height:52px;"></div>${todayLine(52)}</div></div>`;
+    });
+  });
+  html+=`</div></div></div>`;
+  gc.innerHTML=html;
+  const gsumEl=document.getElementById('gsum');
+  if(gsumEl)gsumEl.innerHTML=summaries.map(s=>`<div class="gsum-card"><div style="font-family:var(--display);font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;margin-bottom:8px;"><div style="width:10px;height:10px;border-radius:2px;background:${s.color};"></div>${s.proj}</div><div class="target-chip">⚑ ${fmtL(s.pE)}</div><div class="gsmeta" style="margin-bottom:6px;">${s.daysLeft>0?s.daysLeft+' days remaining':'⚠ '+Math.abs(s.daysLeft)+' days overdue'}</div><div class="gpbar"><div class="gpbar-fill" style="width:${s.pct}%;background:${s.color};"></div></div><div class="gsmeta">${s.comp}/${s.total} complete · <span style="color:${s.color};">${s.pct}%</span></div></div>`).join('');
+}
+function showGTT(e,proc,part,st,d,res){const t=document.getElementById('gtooltip');document.getElementById('gtt-proc').textContent=proc;document.getElementById('gtt-part').textContent=part;document.getElementById('gtt-st').textContent=st;document.getElementById('gtt-d').textContent=d+' days';document.getElementById('gtt-res').textContent=res||'None';t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';t.classList.add('show');}
+function hideGTT(){document.getElementById('gtooltip').classList.remove('show');}
+document.addEventListener('mousemove',e=>{const t=document.getElementById('gtooltip');if(t.classList.contains('show')){t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-20)+'px';}});
+function openBarEdit(e,partIdx,procIdx,startStr){e.stopPropagation();const proc=GANTT_PARTS[partIdx].processes[procIdx];editingBar={partIdx,procIdx};document.getElementById('bep-title').textContent=proc.name;document.getElementById('bep-start').value=startStr;document.getElementById('bep-days').value=proc.days;const sel=document.getElementById('bep-res-sel');sel.innerHTML=`<option value="">— Select employee —</option>`+LISTS.resources.map(e=>`<option value="${e.id}">${e.name} (${e.role})</option>`).join('');renderBEPRes(proc.resources);const panel=document.getElementById('bar-edit-panel');panel.style.left=Math.min(e.clientX,window.innerWidth-300)+'px';panel.style.top=Math.min(e.clientY+10,window.innerHeight-320)+'px';panel.classList.add('open');document.querySelectorAll('.gproc-bar').forEach(b=>b.classList.remove('selected'));document.getElementById(`bar-${partIdx}-${procIdx}`)?.classList.add('selected');}
+function renderBEPRes(list){document.getElementById('bep-res-list').innerHTML=list.map(id=>{const emp=empById(id);return emp?`<span class="res-badge" style="background:${emp.color}22;color:${emp.color};border:1px solid ${emp.color}44;">${emp.name}<button class="res-badge-rm" onclick="removeGanttRes('${id}')">✕</button></span>`:''}).join('');}
+function addGanttResource(){if(!editingBar)return;const id=document.getElementById('bep-res-sel').value;if(!id)return;const proc=GANTT_PARTS[editingBar.partIdx].processes[editingBar.procIdx];if(!proc.resources.includes(id)){proc.resources.push(id);renderBEPRes(proc.resources);}document.getElementById('bep-res-sel').value='';}
+function removeGanttRes(id){if(!editingBar)return;const proc=GANTT_PARTS[editingBar.partIdx].processes[editingBar.procIdx];proc.resources=proc.resources.filter(r=>r!==id);renderBEPRes(proc.resources);}
+function saveBarEdit(){if(!editingBar)return;const p=GANTT_PARTS[editingBar.partIdx],proc=p.processes[editingBar.procIdx];proc.days=parseInt(document.getElementById('bep-days').value)||proc.days;const ns=document.getElementById('bep-start').value;if(editingBar.procIdx===0&&ns)p.start=ns;closeBarEdit();drawGantt();toast('Gantt updated · '+proc.name);}
+function closeBarEdit(){document.getElementById('bar-edit-panel').classList.remove('open');document.querySelectorAll('.gproc-bar').forEach(b=>b.classList.remove('selected'));editingBar=null;}
+let resizeDrag=null;
+function startResize(e,partIdx,procIdx,side){e.preventDefault();e.stopPropagation();const proc=GANTT_PARTS[partIdx].processes[procIdx];resizeDrag={partIdx,procIdx,side,startX:e.clientX,origDays:proc.days};}
+document.addEventListener('mousemove',e=>{if(!resizeDrag)return;const DAY=gZoom==='week'?22:10;const dx=e.clientX-resizeDrag.startX,delta=Math.round(dx/DAY);const proc=GANTT_PARTS[resizeDrag.partIdx].processes[resizeDrag.procIdx];const nd=Math.max(1,resizeDrag.origDays+(resizeDrag.side==='right'?delta:-delta));proc.days=nd;const bar=document.getElementById(`bar-${resizeDrag.partIdx}-${resizeDrag.procIdx}`);if(bar)bar.style.width=Math.max(nd*DAY-2,4)+'px';});
+document.addEventListener('mouseup',()=>{if(resizeDrag){resizeDrag=null;drawGantt();toast('Duration updated');}});
+document.addEventListener('click',e=>{if(!e.target.closest('.bar-edit-panel')&&!e.target.closest('.gproc-bar'))if(document.getElementById('bar-edit-panel').classList.contains('open'))closeBarEdit();});
+
+// ═══════════════════════════════════════════════════════════════════════
+// RESOURCE VIEW
+// ═══════════════════════════════════════════════════════════════════════
+let rvWeekOffset=0;
+function renderResources(){
+  return `<div class="page">
+  <div class="section-hdr"><div><div class="section-title">Resource View</div><div class="section-sub">Daily task schedule per employee</div></div>
+  <div style="display:flex;gap:8px;align-items:center;"><button class="btn btn-ghost btn-sm" onclick="rvOff(-1)">← Prev Week</button><button class="btn btn-ghost btn-sm" onclick="rvOff(0)">Today</button><button class="btn btn-ghost btn-sm" onclick="rvOff(1)">Next Week →</button></div></div>
+  <div id="rv-week-label" style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px;"></div>
+  <div id="rv-body"></div>
+</div>`;}
+function rvOff(v){if(v===0)rvWeekOffset=0;else rvWeekOffset+=v;setTimeout(renderResourceCards,0);}
+function renderResourceCards(){
+  const body=document.getElementById('rv-body');if(!body)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const weekStart=sowMon(today);weekStart.setDate(weekStart.getDate()+rvWeekOffset*7);
+  const weekDays=Array.from({length:7},(_,i)=>addD(weekStart,i));
+  const wl=document.getElementById('rv-week-label');
+  if(wl)wl.textContent=`Week of ${fmtL(weekStart)} — ${fmtL(weekDays[6])}`;
+  const assignments={};LISTS.resources.forEach(e=>assignments[e.id]=[]);
+  GANTT_PARTS.forEach(p=>{let cursor=new Date(p.start);p.processes.forEach(proc=>{const start=new Date(cursor),end=addD(cursor,proc.days);cursor=end;proc.resources.forEach(empId=>{weekDays.forEach(day=>{if(day>=start&&day<end){if(!assignments[empId])assignments[empId]=[];assignments[empId].push({day,proc:proc.name,part:p.name,partId:p.id,status:proc.status,start,end});}});});});});
+  body.innerHTML=LISTS.resources.map(emp=>{
+    const tasks=assignments[emp.id]||[],workload=Math.min(100,Math.round(tasks.length/7*100));
+    const tasksByDay={};weekDays.forEach(d=>{tasksByDay[d.toDateString()]=[];});tasks.forEach(t=>{const k=t.day.toDateString();if(tasksByDay[k])tasksByDay[k].push(t);});
+    return `<div class="emp-card"><div class="emp-header">
+      <div class="emp-av" style="background:${emp.color}22;color:${emp.color};border:1px solid ${emp.color}44;">${emp.name.split(' ').map(x=>x[0]).join('')}</div>
+      <div style="flex:1;"><div class="emp-name">${emp.name}</div><div class="emp-role">${emp.role}</div><div class="wload-bar" style="width:150px;"><div class="wload-fill" style="width:${workload}%;background:${emp.color};"></div></div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;">${tasks.length} task-days · ${workload}% utilization</div></div>
+      <div style="text-align:right;font-family:var(--mono);font-size:10px;">${tasks.length===0?'<span style="color:var(--green);">FREE</span>':'<span style="color:var(--accent2);">'+tasks.length+' TASKS</span>'}</div>
+    </div>
+    <div class="emp-week">
+      ${weekDays.map((day,di)=>{const k=day.toDateString(),dayTasks=tasksByDay[k]||[],isToday=day.toDateString()===new Date().toDateString(),dayNames=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      return `<div class="rv-day-col"><div class="rv-day-header${isToday?' today':''}"><div style="font-size:11px;">${dayNames[di]}</div><div style="font-size:9px;margin-top:1px;">${fmt(day)}</div></div>
+      <div style="padding:4px 0;min-height:50px;">${dayTasks.length===0?`<div style="font-family:var(--mono);font-size:9px;color:var(--border2);text-align:center;padding:8px 0;">—</div>`:dayTasks.map(t=>{const pc=PROC_COLORS[t.proc]||['#252830','#888'];return `<div class="rv-task" style="border-left-color:${pc[1]};"><div class="rv-task-proc" style="color:${pc[1]};">${t.proc}</div><div class="rv-task-part">${t.partId} · ${t.part}</div><div style="margin-top:4px;">${sBadge(t.status)}</div></div>`;}).join('')}</div></div>`;}).join('')}
+    </div></div>`;}).join('');}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ADMIN: LIST EDITOR PAGE
+// ═══════════════════════════════════════════════════════════════════════
+function renderLists(){
+  return `<div class="page">
+  <div class="section-hdr"><div><div class="section-title">List Editor</div><div class="section-sub">Admin · Manage system-wide reference lists</div></div></div>
+  <div class="note">⚑ Changes here affect all dropdowns and filters across the system. Only Admin users can edit these lists.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+    ${[
+      ['Processes','processes','Configure manufacturing process steps'],
+      ['Material Types','materialTypes','Types of raw material (e.g. Metal, Plastic)'],
+      ['Material Grades','materialGrades','Specific grades/alloys (e.g. SS316, Al6061)'],
+      ['Vendors','vendors','Approved supplier list'],
+    ].map(([title,key,sub])=>`<div class="card">
+      <div class="section-hdr"><div><div class="section-title" style="font-size:16px;">${title}</div><div class="section-sub">${sub}</div></div><button class="btn btn-ghost btn-sm" onclick="openListEditor('${key}','${title}')">✎ Edit</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${LISTS[key].map(v=>`<span style="background:var(--surface2);border:1px solid var(--border2);border-radius:2px;padding:3px 9px;font-family:var(--mono);font-size:10px;color:var(--muted);">${v}</span>`).join('')}</div>
+    </div>`).join('')}
+    <div class="card">
+      <div class="section-hdr"><div><div class="section-title" style="font-size:16px;">Resources (Employees)</div><div class="section-sub">Machinists, welders, fabricators, etc.</div></div><button class="btn btn-ghost btn-sm" onclick="openResEditor()">✎ Edit</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">${LISTS.resources.map(e=>`<div style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid ${e.color}33;border-radius:3px;padding:5px 9px;"><div style="width:8px;height:8px;border-radius:50%;background:${e.color};"></div><div><div style="font-size:12px;font-weight:600;">${e.name}</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">${e.role}</div></div></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="section-hdr"><div><div class="section-title" style="font-size:16px;">Projects</div></div><button class="btn btn-ghost btn-sm" onclick="openListEditor('projects','Projects')">✎ Edit</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">${LISTS.projects.map(v=>`<span style="background:${PROJ_COLORS[v]||'#333'}22;border:1px solid ${PROJ_COLORS[v]||'#333'}44;border-radius:2px;padding:3px 9px;font-family:var(--mono);font-size:10px;color:${PROJ_COLORS[v]||'var(--muted)'};">${v}</span>`).join('')}</div>
+    </div>
+  </div>
+</div>`;}
+
+let leKey='',leItems=[];
+function openListEditor(key,title){
+  leKey=key;leItems=[...LISTS[key]];
+  document.getElementById('le-title').textContent='Edit: '+title;
+  renderLeItems();
+  document.getElementById('le-new-sub').style.display='none';
+  document.getElementById('list-editor-modal').classList.add('open');
+}
+function renderLeItems(){
+  document.getElementById('le-items').innerHTML=leItems.map((item,i)=>`<div class="list-item"><div class="list-item-label">${item}</div><button class="list-item-rm" onclick="leRemove(${i})">✕</button></div>`).join('');
+}
+function leAddItem(){const v=document.getElementById('le-new-input').value.trim();if(!v)return;leItems.push(v);renderLeItems();document.getElementById('le-new-input').value='';}
+function leRemove(i){leItems.splice(i,1);renderLeItems();}
+function leSave(){LISTS[leKey]=[...leItems];closeModal('list-editor-modal');toast(leKey+' list updated');showPage('lists');}
+
+let leResItems=[];
+function openResEditor(){
+  leResItems=LISTS.resources.map(r=>({...r}));
+  document.getElementById('le-title').textContent='Edit: Employees & Resources';
+  document.getElementById('le-items').innerHTML='';
+  renderLeResItems();
+  document.getElementById('le-new-sub').style.display='inline-block';
+  document.getElementById('le-new-input').placeholder='Employee name...';
+  document.getElementById('le-new-sub').placeholder='Role (e.g. Welder)';
+  document.getElementById('list-editor-modal').classList.add('open');
+  const orig=leAddItem;
+  document.querySelector('.list-add-row .btn').onclick=function(){
+    const n=document.getElementById('le-new-input').value.trim(),r=document.getElementById('le-new-sub').value.trim();
+    if(!n||!r)return;
+    const colors=['#3b82f6','#ef4444','#8b5cf6','#22c55e','#f97316','#06b6d4','#eab308','#f472b6'];
+    leResItems.push({id:'E'+String(LISTS.resources.length+leResItems.length+10).padStart(2,'0'),name:n,role:r,color:colors[leResItems.length%colors.length]});
+    renderLeResItems();
+    document.getElementById('le-new-input').value='';document.getElementById('le-new-sub').value='';
+  };
+  document.querySelector('.modal-foot .btn-primary').onclick=function(){
+    LISTS.resources=[...leResItems];closeModal('list-editor-modal');toast('Resources updated');showPage('lists');
+  };
+}
+function renderLeResItems(){
+  document.getElementById('le-items').innerHTML=leResItems.map((e,i)=>`<div class="list-item"><div style="width:10px;height:10px;border-radius:50%;background:${e.color};flex-shrink:0;"></div><div class="list-item-label"><strong>${e.name}</strong> <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">${e.role}</span></div><button class="list-item-rm" onclick="leResItems.splice(${i},1);renderLeResItems()">✕</button></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PROJECTS / AUDIT / USERS
+// ═══════════════════════════════════════════════════════════════════════
+function renderProjects(){
+  return `<div class="page"><div class="section-hdr"><div><div class="section-title">Projects</div></div><button class="btn btn-primary btn-sm" onclick="toast('Open List Editor to add projects','inf')">+ New Project</button></div>
+  <div class="note">⚑ Manage project names from <strong>Admin → List Editor</strong>. Only Admin users can create projects.</div>
+  <div class="card" style="padding:0;overflow:hidden;"><table><thead><tr><th>Project Name</th><th>Parts</th><th>Status</th><th>Description</th><th>Actions</th></tr></thead>
+  <tbody>${PROJECTS_DATA.map(p=>`<tr><td><strong style="font-family:var(--display);font-size:15px;">${p.name}</strong></td><td><span style="font-family:var(--mono);color:var(--accent);font-size:16px;font-weight:700;">${p.parts}</span></td><td>${sBadge('In Progress')}</td><td style="color:var(--muted);font-size:12px;">${p.desc}</td><td><div style="display:flex;gap:5px;"><button class="btn btn-ghost btn-sm">Edit</button></div></td></tr>`).join('')}</tbody></table></div></div>`;}
+
+let auditFt='ALL';
+function renderAudit(){
+  return `<div class="page"><div class="section-hdr"><div><div class="section-title">Audit Trail</div></div><button class="btn btn-ghost btn-sm">↓ Export CSV</button></div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;"><input type="text" placeholder="🔍  Search..." style="background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:7px 11px;color:var(--text);font-family:var(--body);font-size:13px;outline:none;width:240px;"/>
+  ${['ALL','CREATE','UPDATE','DELETE','LOGIN'].map(f=>`<div class="fp-chip${f===auditFt?' sel':''}" onclick="filterAudit('${f}',this)">${f==='ALL'?'All Events':f}</div>`).join('')}</div>
+  <div class="card" style="padding:0;overflow:hidden;"><div style="display:grid;grid-template-columns:140px 70px 80px 90px 1fr;gap:10px;padding:9px 14px;background:var(--surface2);border-bottom:2px solid var(--border2);">${['Timestamp','Action','Resource','User','Detail'].map(c=>`<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">${c}</div>`).join('')}</div>
+  <div id="audit-rows">${renderAuditRows(AUDIT_LOGS)}</div></div></div>`;}
+function renderAuditRows(logs){return logs.map(l=>`<div style="display:grid;grid-template-columns:140px 70px 80px 90px 1fr;gap:10px;align-items:start;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;"><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">${l.time}</div><div><div class="aaction a-${l.action.toLowerCase()}">${l.action}</div></div><div style="font-family:var(--mono);font-size:10px;color:var(--orange);">${l.resource}</div><div style="font-weight:500;">${l.user}</div><div style="color:var(--muted);line-height:1.5;">${l.detail}${l.before!=null&&l.before?`<div style="font-family:var(--mono);font-size:10px;margin-top:3px;"><span style="color:var(--muted);width:60px;display:inline-block;">Before:</span><span class="chg-old">${l.before}</span><br><span style="color:var(--muted);width:60px;display:inline-block;">After:</span><span class="chg-new">${l.after}</span></div>`:''}</div></div>`).join('');}
+function filterAudit(f,el){auditFt=f;document.querySelectorAll('[onclick^="filterAudit"]').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');const r=document.getElementById('audit-rows');if(r)r.innerHTML=renderAuditRows(f==='ALL'?AUDIT_LOGS:AUDIT_LOGS.filter(l=>l.action===f));}
+
+function renderUsers(){
+  const users=[{n:'R. Kumar',role:'Admin',email:'r.kumar@mfg.com',last:'2025-02-28 08:30',active:true},{n:'A. Patel',role:'Design',email:'a.patel@mfg.com',last:'2025-02-28 09:12',active:true},{n:'M. Singh',role:'Manufacturing',email:'m.singh@mfg.com',last:'2025-02-28 09:14',active:true}];
+  const rc={'Admin':'var(--accent)','Design':'var(--accent2)','Manufacturing':'var(--green)'};
+  return `<div class="page"><div class="section-hdr"><div><div class="section-title">Users</div></div><button class="btn btn-primary btn-sm" onclick="toast('Invite sent','inf')">+ Invite</button></div>
+  <div class="card" style="padding:0;overflow:hidden;"><table><thead><tr><th>User</th><th>Role</th><th>Email</th><th>Last Login</th><th>Status</th></tr></thead>
+  <tbody>${users.map(u=>`<tr><td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" style="width:26px;height:26px;font-size:10px;">${u.n.split(' ').map(x=>x[0]).join('')}</div><strong>${u.n}</strong></div></td><td><span style="font-family:var(--mono);font-size:10px;color:${rc[u.role]};background:${rc[u.role]}22;padding:2px 7px;border-radius:2px;">${u.role.toUpperCase()}</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--muted);">${u.email}</td><td style="font-family:var(--mono);font-size:11px;">${u.last}</td><td>${sBadge('In Progress')}</td></tr>`).join('')}</tbody></table></div></div>`;}
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════════
+function openModal(id,tab){
+  if(id==='part-modal'){
+    // Populate dynamic selects
+    const sp=document.getElementById('sp-project');if(sp)sp.innerHTML=makeSelectOpts(LISTS.projects);
+    const sm=document.getElementById('sp-mattype');if(sm)sm.innerHTML=makeSelectOpts(LISTS.materialTypes);
+    const sg=document.getElementById('sp-matgrade');if(sg)sg.innerHTML=makeSelectOpts(LISTS.materialGrades);
+    document.getElementById('part-modal').classList.add('open');
+    switchPartTab(tab||'single');
+    if(tab==='bulk'&&!document.getElementById('bulk-tbody').children.length)addBulkRows(3);
+  }
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open');}));
+
+// SINGLE PART
+let sPC=0;
+function switchPartTab(tab){
+  document.getElementById('pane-single').style.display=tab==='single'?'block':'none';
+  document.getElementById('pane-bulk').style.display=tab==='bulk'?'block':'none';
+  document.getElementById('tab-single').classList.toggle('active',tab==='single');
+  document.getElementById('tab-bulk').classList.toggle('active',tab==='bulk');
+  document.getElementById('pm-title').textContent=tab==='bulk'?'BULK CREATE PARTS':'NEW PART';
+  if(tab==='single'&&!document.getElementById('proc-list').children.length){sPC=0;addSingleProc();addSingleProc();}
+}
+function addSingleProc(sel=''){sPC++;const row=document.createElement('div');row.className='proc-row';row.innerHTML=`<div class="proc-num">${String(sPC).padStart(2,'0')}</div><select class="proc-sel">${LISTS.processes.map(p=>`<option${p===sel?' selected':''}>${p}</option>`).join('')}</select><button class="proc-rm" onclick="removeSingleProc(this)">✕</button>`;document.getElementById('proc-list').appendChild(row);}
+function removeSingleProc(btn){btn.closest('.proc-row').remove();document.querySelectorAll('#proc-list .proc-num').forEach((el,i)=>el.textContent=String(i+1).padStart(2,'0'));sPC=document.querySelectorAll('#proc-list .proc-row').length;}
+function saveSingle(){const n=document.querySelector('#pane-single .fi[placeholder*="Shaft"]')?.value||'New Part';const id=`PT-${String(nextPartNum++).padStart(3,'0')}`;PARTS.push({id,name:n,project:document.getElementById('sp-project')?.value||LISTS.projects[0],qty:1,matType:document.getElementById('sp-mattype')?.value||'Metal',matGrade:document.getElementById('sp-matgrade')?.value||'',status:'Not Started',currentStep:0,vendor:'',po:'',eta:'',processes:[...document.querySelectorAll('#proc-list .proc-sel')].map(s=>s.value),asanaId:''});closeModal('part-modal');document.getElementById('nb-parts').textContent=PARTS.length;toast(`Part ${id} created!`);}
+
+// BULK
+let bulkId=0,bulkData={},ppRow=null,ppTemp=[];
+function addBulkRow(){
+  const id=++bulkId;bulkData[id]={procs:[]};
+  const tr=document.createElement('tr');tr.dataset.rid=id;
+  tr.innerHTML=`<td class="rnum">${document.getElementById('bulk-tbody').children.length+1}</td>
+  <td><input class="bi" placeholder="Part name..."/></td>
+  <td><select class="bs">${makeSelectOpts(LISTS.projects)}</select></td>
+  <td><input class="bi" type="number" value="1" min="1" style="width:44px;"/></td>
+  <td><select class="bs">${makeSelectOpts(LISTS.materialTypes)}</select></td>
+  <td><select class="bs">${makeSelectOpts(LISTS.materialGrades)}</select></td>
+  <td><input class="bi" placeholder="Vendor"/></td>
+  <td><input class="bi" placeholder="PO #"/></td>
+  <td><input class="bi" type="date" style="color-scheme:dark;width:110px;"/></td>
+  <td><input class="bi" placeholder="Asana ID" style="width:110px;"/></td>
+  <td><div class="proc-tags-cell" id="ptc-${id}" onclick="openPP(${id})"><span class="ptag-ph">Click to select…</span></div></td>
+  <td><button class="rdel" onclick="removeBulkRow(this)">✕</button></td>`;
+  document.getElementById('bulk-tbody').appendChild(tr);reindexBulk();
+}
+function addBulkRows(n){for(let i=0;i<n;i++)addBulkRow();}
+function removeBulkRow(btn){const tr=btn.closest('tr');delete bulkData[tr.dataset.rid];tr.remove();reindexBulk();}
+function clearBulk(){document.getElementById('bulk-tbody').innerHTML='';Object.keys(bulkData).forEach(k=>delete bulkData[k]);bulkId=0;reindexBulk();}
+function reindexBulk(){document.querySelectorAll('#bulk-tbody tr').forEach((tr,i)=>tr.querySelector('.rnum').textContent=i+1);const n=document.getElementById('bulk-tbody').children.length;document.getElementById('bulk-count').textContent=n+' rows';document.getElementById('bulk-save-btn').textContent=`Create ${n} Part${n!==1?'s':''}`;}
+function openPP(rowId){ppRow=rowId;ppTemp=[...(bulkData[rowId]?.procs||[])];document.getElementById('pp-opts').innerHTML=LISTS.processes.map(p=>{const idx=ppTemp.indexOf(p);return `<div class="ppopt" onclick="togglePP('${p}',this)"><input type="checkbox" ${idx>=0?'checked':''} readonly/><span class="ppord" id="ppo-${p.replace(/\s/g,'_')}">${idx>=0?idx+1:''}</span><span>${p}</span></div>`;}).join('');document.getElementById('pp-modal').classList.add('open');}
+function togglePP(proc,el){const cb=el.querySelector('input'),ord=document.getElementById('ppo-'+proc.replace(/\s/g,'_')),idx=ppTemp.indexOf(proc);if(idx>=0){ppTemp.splice(idx,1);cb.checked=false;ord.textContent='';}else{ppTemp.push(proc);cb.checked=true;ord.textContent=ppTemp.length;}LISTS.processes.forEach(p=>{const i=ppTemp.indexOf(p);const o=document.getElementById('ppo-'+p.replace(/\s/g,'_'));if(o)o.textContent=i>=0?i+1:'';});}
+function confirmPP(){if(ppRow===null)return;bulkData[ppRow].procs=[...ppTemp];const el=document.getElementById('ptc-'+ppRow);el.innerHTML=ppTemp.length?ppTemp.map((p,i)=>`<span class="ptag">${i+1}. ${p}</span>`).join(''):'<span class="ptag-ph">Click to select…</span>';closeModal('pp-modal');ppRow=null;ppTemp=[];}
+function saveBulk(){
+  const rows=document.querySelectorAll('#bulk-tbody tr');let err=0;
+  rows.forEach(tr=>{const n=tr.querySelectorAll('input')[0]?.value.trim(),id=tr.dataset.rid,p=bulkData[id]?.procs||[];if(!n||!p.length)err++;});
+  if(err){toast(`${err} row(s) missing name or processes`,'err');return;}
+  rows.forEach(tr=>{const inputs=tr.querySelectorAll('input'),sels=tr.querySelectorAll('select'),id=tr.dataset.rid;const partId=`PT-${String(nextPartNum++).padStart(3,'0')}`;PARTS.push({id:partId,name:inputs[0].value,project:sels[0].value,qty:parseInt(inputs[1].value)||1,matType:sels[1].value,matGrade:sels[2].value,status:'Not Started',currentStep:0,vendor:inputs[2].value,po:inputs[3].value,eta:inputs[4].value,asanaId:inputs[5].value,processes:bulkData[id]?.procs||[]});});
+  closeModal('part-modal');document.getElementById('nb-parts').textContent=PARTS.length;toast(`${rows.length} parts created!`);
+}
+
+// IMPORT TABS
+let importTab='manual';
+function switchImportTab(tab,el){
+  importTab=tab;
+  document.querySelectorAll('.import-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.getElementById('import-manual').style.display=tab==='manual'?'block':'none';
+  document.getElementById('import-paste').style.display=tab==='paste'?'block':'none';
+  document.getElementById('import-file').style.display=tab==='file'?'block':'none';
+}
+
+// PASTE FROM EXCEL
+function parsePaste(){
+  const raw=document.getElementById('paste-area').value.trim();
+  const preview=document.getElementById('paste-preview');
+  if(!raw){preview.innerHTML='';return;}
+  const lines=raw.split('\n').filter(l=>l.trim());
+  const rows=lines.map(l=>l.split('\t'));
+  preview.innerHTML=`<div style="color:var(--green);margin-bottom:8px;">✓ ${rows.length} row(s) detected</div>
+  <div style="font-size:11px;color:var(--muted);">Columns mapped: Name | Project | Qty | Mat.Type | Mat.Grade | Vendor | PO | Date | AsanaID | Processes…</div>
+  <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="importPasteRows()">Import ${rows.length} Rows →</button>`;
+}
+function importPasteRows(){
+  const raw=document.getElementById('paste-area').value.trim();
+  if(!raw)return;
+  const lines=raw.split('\n').filter(l=>l.trim());
+  // Clear existing bulk rows
+  clearBulk();
+  lines.forEach(line=>{
+    const cols=line.split('\t');
+    const id=++bulkId;bulkData[id]={procs:[]};
+    const tr=document.createElement('tr');tr.dataset.rid=id;
+    const name=cols[0]||'',proj=cols[1]||LISTS.projects[0],qty=cols[2]||'1',matT=cols[3]||LISTS.materialTypes[0],matG=cols[4]||'',vendor=cols[5]||'',po=cols[6]||'',date=cols[7]||'',asana=cols[8]||'';
+    const procs=cols.slice(9).map(c=>c.trim()).filter(c=>LISTS.processes.includes(c));
+    bulkData[id].procs=procs;
+    tr.innerHTML=`<td class="rnum">${document.getElementById('bulk-tbody').children.length+1}</td>
+    <td><input class="bi" value="${name}" placeholder="Part name..."/></td>
+    <td><select class="bs">${makeSelectOpts(LISTS.projects,proj)}</select></td>
+    <td><input class="bi" type="number" value="${qty}" min="1" style="width:44px;"/></td>
+    <td><select class="bs">${makeSelectOpts(LISTS.materialTypes,matT)}</select></td>
+    <td><select class="bs">${makeSelectOpts(LISTS.materialGrades,matG)}</select></td>
+    <td><input class="bi" value="${vendor}" placeholder="Vendor"/></td>
+    <td><input class="bi" value="${po}" placeholder="PO #"/></td>
+    <td><input class="bi" type="date" value="${date}" style="color-scheme:dark;width:110px;"/></td>
+    <td><input class="bi" value="${asana}" placeholder="Asana ID" style="width:110px;"/></td>
+    <td><div class="proc-tags-cell" id="ptc-${id}" onclick="openPP(${id})">${procs.length?procs.map((p,i)=>`<span class="ptag">${i+1}. ${p}</span>`).join(''):'<span class="ptag-ph">Click to select…</span>'}</div></td>
+    <td><button class="rdel" onclick="removeBulkRow(this)">✕</button></td>`;
+    document.getElementById('bulk-tbody').appendChild(tr);
+  });
+  reindexBulk();
+  // Switch to manual tab to review
+  switchImportTab('manual',document.querySelector('.import-tab'));
+  toast(`${lines.length} rows imported from paste — review then create`,'inf');
+}
+
+// FILE UPLOAD (CSV)
+function handleFileDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('drag-over');const file=e.dataTransfer.files[0];if(file)processFile(file);}
+function handleFileSelect(e){const file=e.target.files[0];if(file)processFile(file);}
+function processFile(file){
+  const preview=document.getElementById('file-preview');
+  if(file.name.endsWith('.csv')){
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const lines=ev.target.result.split('\n').filter(l=>l.trim());
+      const dataLines=lines[0].toLowerCase().includes('name')?lines.slice(1):lines; // skip header if present
+      preview.innerHTML=`<div style="color:var(--green);font-family:var(--mono);font-size:11px;margin-bottom:8px;">✓ ${dataLines.length} data row(s) found in ${file.name}</div>
+      <div style="font-size:11px;color:var(--muted);">First row preview: ${dataLines[0]?.substring(0,80)}…</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="importCSVRows(${JSON.stringify(dataLines).split('').map(c=>c.replace(/'/g,"\\x27")).join('')})">Import ${dataLines.length} Rows →</button>`;
+      // Simpler approach: put into paste area and trigger parsePaste
+      document.getElementById('paste-area').value=dataLines.join('\n').replace(/,/g,'\t');
+      switchImportTab('paste',document.querySelectorAll('.import-tab')[1]);
+      parsePaste();
+    };
+    reader.readAsText(file);
+  } else {
+    preview.innerHTML=`<div style="color:var(--yellow);font-family:var(--mono);font-size:11px;">⚠ .xlsx import: Copy data from Excel and use the <strong>Paste from Excel</strong> tab for best results.</div>`;
+  }
+}
+
+// TOAST
+function toast(msg,type='ok'){const w=document.getElementById('toast-wrap');const t=document.createElement('div');t.style.cssText=`background:var(--surface3);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;display:flex;align-items:center;gap:10px;font-size:13px;min-width:260px;animation:mIn .3s ease;border-left:3px solid ${type==='err'?'var(--red)':type==='inf'?'var(--accent2)':'var(--green)'}`;const ic={ok:'✓',err:'✕',inf:'ℹ'},co={ok:'var(--green)',err:'var(--red)',inf:'var(--accent2)'};t.innerHTML=`<span style="font-size:16px;color:${co[type]||co.ok};">${ic[type]||'✓'}</span>${msg}`;w.appendChild(t);setTimeout(()=>t.remove(),3200);}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════
+showPage('dashboard');
+</script>
+</body>
+</html>
